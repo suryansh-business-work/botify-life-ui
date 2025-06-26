@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/v1/api/code-run';
+const API_BASE_URL = 'https://srv878309.hstgr.cloud:3000/v1/api/code-run';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

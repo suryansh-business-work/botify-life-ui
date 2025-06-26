@@ -50,8 +50,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import { createContainer } from "./docker-container/default-config.nodejs";
 import { AdvanceContainerConfig } from "./AdvanceContainerConfig";
 
-const API_BASE = "http://localhost:3000/v1/api/mcp-server";
-const ORGANIZATION_API_BASE = "http://localhost:3000/v1/api/organization";
+const API_BASE = "https://srv878309.hstgr.cloud:3000/v1/api/mcp-server";
+const ORGANIZATION_API_BASE = "https://srv878309.hstgr.cloud:3000/v1/api/organization";
 
 // Animated MUI components
 const MotionDialog = motion(Dialog);

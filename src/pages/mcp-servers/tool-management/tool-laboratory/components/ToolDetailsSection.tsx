@@ -62,13 +62,13 @@ const ToolDetailsSection: React.FC<ToolDetailsSectionProps> = ({ mcpServerId }) 
         const headers = { Authorization: `Bearer ${token}` };
 
         // Fetch server name
-        const serverRes = await axios.get(`http://localhost:3000/v1/api/mcp-server/get/${mcpServerId}`, { headers });
+        const serverRes = await axios.get(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/get/${mcpServerId}`, { headers });
         if (serverRes.data?.data) {
           setServerName(serverRes.data.data.mcpServerName || "Unknown Server");
         }
 
         // Fetch tool details
-        const toolRes = await axios.get(`http://localhost:3000/v1/api/mcp-server/tool/get/${toolId}`, { headers });
+        const toolRes = await axios.get(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/get/${toolId}`, { headers });
         if (toolRes.data?.data) {
           setToolData(toolRes.data.data);
         }
@@ -113,7 +113,7 @@ const ToolDetailsSection: React.FC<ToolDetailsSectionProps> = ({ mcpServerId }) 
 
       // Update the API endpoint to match the curl command
       const headers = { Authorization: `Bearer ${token}` };
-      await axios.delete(`http://localhost:3000/v1/api/mcp-server/tool/delete/${toolId}`, { headers });
+      await axios.delete(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/delete/${toolId}`, { headers });
 
       // Navigate back with success message
       navigate(`/lab/mcp-server/your-server/${mcpServerId}`, {

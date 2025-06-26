@@ -74,7 +74,7 @@ const McpServerDetails = () => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3000/v1/api/mcp-server/get/${mcpServerId}`, {
+      const res = await fetch(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/get/${mcpServerId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +118,7 @@ const McpServerDetails = () => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3000/v1/api/mcp-server/update/${mcpServerId}`, {
+      const res = await fetch(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/update/${mcpServerId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

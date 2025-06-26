@@ -27,7 +27,7 @@ const typeIconMap: Record<string, string> = {
   all: "fas fa-list",
 };
 
-const API_BASE = "http://localhost:3000/bot";
+const API_BASE = "https://srv878309.hstgr.cloud:3000/bot";
 
 const Bots = () => {
   const [bots, setBots] = useState<any[]>([]);

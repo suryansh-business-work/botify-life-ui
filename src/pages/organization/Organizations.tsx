@@ -41,7 +41,7 @@ import {
 import axios from 'axios';
 import CreateAndUpdateOrganization from './CreateAndUpdateOrganization';
 
-const API_BASE = 'http://localhost:3000/v1/api/organization';
+const API_BASE = 'https://srv878309.hstgr.cloud:3000/v1/api/organization';
 
 interface Organization {
   organizationId: string;

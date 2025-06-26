@@ -63,7 +63,7 @@ const Tools: React.FC<ToolsProps> = ({ mcpServerId }) => {
         throw new Error("Authentication token not found");
       }
       
-      const res = await fetch(`http://localhost:3000/v1/api/mcp-server/tool/list/${mcpServerId}`, {
+      const res = await fetch(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/list/${mcpServerId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

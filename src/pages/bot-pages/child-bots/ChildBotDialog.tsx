@@ -105,11 +105,11 @@ export default function ChildBotDialog({
       let payload: any = { ...data, type };
 
       if (mode === "create") {
-        url = "http://localhost:3000/bot/create/child-bot";
+        url = "https://srv878309.hstgr.cloud:3000/bot/create/child-bot";
         method = "POST";
       } else {
         const botId = bot.botId || bot.id;
-        url = `http://localhost:3000/bot/update/child-bot/${botId}`;
+        url = `https://srv878309.hstgr.cloud:3000/bot/update/child-bot/${botId}`;
         method = "PATCH";
       }
 

@@ -41,7 +41,7 @@ const HeaderUserMenu = () => {
     const endDate = getEndOfMonth();
     const botOwnerUserId = user?.userId || "";
 
-    const apiUrl = `http://localhost:3000/v1/api/subscription-usage/user/${botOwnerUserId}/date-range?startDate=${startDate}&endDate=${endDate}`;
+    const apiUrl = `https://srv878309.hstgr.cloud:3000/v1/api/subscription-usage/user/${botOwnerUserId}/date-range?startDate=${startDate}&endDate=${endDate}`;
 
     try {
       const response = await axios.get(apiUrl);

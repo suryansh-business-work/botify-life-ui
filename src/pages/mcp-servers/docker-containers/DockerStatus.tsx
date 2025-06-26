@@ -16,7 +16,7 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
-const DOCKER_INFO_API = "http://localhost:3000/v1/api/code-run/docker-info";
+const DOCKER_INFO_API = "https://srv878309.hstgr.cloud:3000/v1/api/code-run/docker-info";
 
 const DockerStatus: React.FC = () => {
   const [dockerInfo, setDockerInfo] = useState<any>(null);

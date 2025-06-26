@@ -17,7 +17,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Table from "../components/Table";
 import Button from "../components/Button";
 
-const API_BASE = "http://localhost:3000/design-system";
+const API_BASE = "https://srv878309.hstgr.cloud:3000/design-system";
 
 export default function ThemeList({
   selectedThemeId,

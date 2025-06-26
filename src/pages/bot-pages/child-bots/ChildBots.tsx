@@ -22,7 +22,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
-const API_BASE = "http://localhost:3000/bot";
+const API_BASE = "https://srv878309.hstgr.cloud:3000/bot";
 
 const ChildBots = () => {
   const { childBotType } = useParams<{ childBotType: string }>();

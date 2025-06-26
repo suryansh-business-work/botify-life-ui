@@ -88,7 +88,7 @@ interface CreateAndUpdateOrganizationProps {
   organization?: OrganizationFormData | null;
 }
 
-const API_BASE = 'http://localhost:3000/v1/api/organization';
+const API_BASE = 'https://srv878309.hstgr.cloud:3000/v1/api/organization';
 
 const validationSchema = Yup.object({
   organizationName: Yup.string().required('Organization Name is required'),

@@ -40,7 +40,7 @@ const McpDeleteDialog: React.FC<McpDeleteDialogProps> = ({
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3000/v1/api/mcp-server/delete/${mcpServerId}`, {
+      const res = await fetch(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/delete/${mcpServerId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

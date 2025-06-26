@@ -18,7 +18,7 @@ export const McpServerProvider: React.FC<{children: React.ReactNode}> = ({ child
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3000/v1/api/mcp-server/list`, {
+      const res = await fetch(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/list`, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
