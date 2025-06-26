@@ -39,6 +39,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<NoHeaderLayout />}>
           <Route
+            index
+            element={
+              <UnprotectedRoute>
+                <Login />
+              </UnprotectedRoute>
+            }
+          />
+          <Route
             path="signup"
             element={
               <UnprotectedRoute>
