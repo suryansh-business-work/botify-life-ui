@@ -160,8 +160,8 @@ const CreateAndUpdateToolDialog = ({
     try {
       const token = localStorage.getItem("token");
       const url = isEditMode 
-        ? `https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/update/${tool.toolId}`
-        : `https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/create`;
+        ? `https://botify.exyconn.com/v1/api/mcp-server/tool/update/${tool.toolId}`
+        : `https://botify.exyconn.com/v1/api/mcp-server/tool/create`;
       
       const method = isEditMode ? "PATCH" : "POST";
       

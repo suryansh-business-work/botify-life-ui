@@ -8,7 +8,7 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const API_BASE = "https://srv878309.hstgr.cloud:3000/design-system";
+const API_BASE = "https://botify.exyconn.com/design-system";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [selectedThemeId, setSelectedThemeId] = useState<string>("");

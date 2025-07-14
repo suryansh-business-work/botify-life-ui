@@ -58,7 +58,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
 
     setIsLoadingServers(true);
     try {
-      const response = await fetch('https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/list', {
+      const response = await fetch('https://botify.exyconn.com/v1/api/mcp-server/list', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

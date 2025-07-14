@@ -56,7 +56,7 @@ const ToolSettingsSection: React.FC = () => {
         const headers = { Authorization: `Bearer ${token}` };
         
         const response = await axios.get(
-          `https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/get/${toolId}`,
+          `https://botify.exyconn.com/v1/api/mcp-server/tool/get/${toolId}`,
           { headers }
         );
         
@@ -103,7 +103,7 @@ const ToolSettingsSection: React.FC = () => {
       
       // Update tool data
       await axios.patch(
-        `https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/update/${toolId}`,
+        `https://botify.exyconn.com/v1/api/mcp-server/tool/update/${toolId}`,
         {
           toolName,
           toolDescription,

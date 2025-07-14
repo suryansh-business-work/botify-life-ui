@@ -35,7 +35,7 @@ const DockerTerminal: React.FC = () => {
   const fetchContainers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://srv878309.hstgr.cloud:3000/v1/api/code-run/docker/containers');
+      const response = await axios.get('https://botify.exyconn.com/v1/api/code-run/docker/containers');
       
       let containerList: ContainerInfo[] = [];
       if (Array.isArray(response.data)) {
@@ -79,7 +79,7 @@ const DockerTerminal: React.FC = () => {
       const containerName = container ? container.Names[0].replace('/', '') : 'container';
       
       // Request a terminal session from your backend
-      const response = await axios.post(`https://srv878309.hstgr.cloud:3000/v1/api/code-run/docker/container/${selectedContainer}/exec`, {
+      const response = await axios.post(`https://botify.exyconn.com/v1/api/code-run/docker/container/${selectedContainer}/exec`, {
         AttachStdin: true,
         AttachStdout: true,
         AttachStderr: true,

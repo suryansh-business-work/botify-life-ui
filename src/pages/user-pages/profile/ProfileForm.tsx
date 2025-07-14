@@ -86,7 +86,7 @@ export default function ProfileForm() {
     const formData = new FormData();
     formData.append("files", file);
 
-    const res = await fetch("https://srv878309.hstgr.cloud:3000/v1/api/imagekit/upload", {
+    const res = await fetch("https://botify.exyconn.com/v1/api/imagekit/upload", {
       method: "POST",
       body: formData,
     });

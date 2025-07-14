@@ -30,7 +30,7 @@ const DeleteDialogTool = ({ open, onClose, tool, onSuccess }: DeleteToolProps) =
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool/delete/${tool.toolId}`, {
+      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/tool/delete/${tool.toolId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

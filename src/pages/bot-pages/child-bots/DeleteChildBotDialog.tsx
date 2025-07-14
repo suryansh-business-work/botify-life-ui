@@ -31,7 +31,7 @@ export default function DeleteChildBotDialog({
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `https://srv878309.hstgr.cloud:3000/bot/delete/child-bot/${botId}`,
+        `https://botify.exyconn.com/bot/delete/child-bot/${botId}`,
         {
           method: "DELETE",
           headers: {

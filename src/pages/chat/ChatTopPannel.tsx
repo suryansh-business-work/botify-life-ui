@@ -26,7 +26,7 @@ import SuggestionDialog from "./dialogs/SuggestionDialog";
 import InfoDialog from "./dialogs/InfoDialog";
 import HelpDialog from "./dialogs/HelpDialog";
 
-const API_BASE = "https://srv878309.hstgr.cloud:3000/bot";
+const API_BASE = "https://botify.exyconn.com/bot";
 
 const ChatTopPannel = () => {
   const navigate = useNavigate();

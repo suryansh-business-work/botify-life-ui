@@ -20,7 +20,7 @@ function getRandomColor(seed: string) {
   return `hsl(${h},${s}%,${l}%)`;
 }
 
-const API_BASE = "https://srv878309.hstgr.cloud:3000/design-system";
+const API_BASE = "https://botify.exyconn.com/design-system";
 
 export default function Appearance() {
   const [themes, setThemes] = useState<{ themeId: string; themeName: string; selected?: boolean }[]>([]);

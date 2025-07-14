@@ -246,7 +246,7 @@ const PromptSection = () => {
       const prompt = promptValues?.[testDrawer.idx]?.prompt || "";
       const token = localStorage.getItem("token");
       const resp = await axios.post(
-        "https://srv878309.hstgr.cloud:3000/chat-gpt/prompt",
+        "https://botify.exyconn.com/chat-gpt/prompt",
         { userInput: prompt + "\n" + testUserInput },
         {
           headers:

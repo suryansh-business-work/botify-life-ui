@@ -23,8 +23,8 @@ import axios from "axios";
 import * as monaco from 'monaco-editor';
 import { CHAT_GPT_KEY } from "../../../../../utils/config";
 
-const API_BASE = "https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool-code";
-const TOOLS_API_BASE = "https://srv878309.hstgr.cloud:3000/v1/api/mcp-server/tool";
+const API_BASE = "https://botify.exyconn.com/v1/api/mcp-server/tool-code";
+const TOOLS_API_BASE = "https://botify.exyconn.com/v1/api/mcp-server/tool";
 
 // Default code template with placeholder for tool parameters
 // const DEFAULT_CODE_TEMPLATE = `/**
