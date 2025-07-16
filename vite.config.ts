@@ -14,14 +14,6 @@ export default defineConfig({
     strictPort: true,
     host: true,
     origin: "http://0.0.0.0:5173",
-    allowedHosts: ['app.botify.life'],
-    proxy: {
-      '/': {
-        target: 'https://botify.exyconn.com',
-        changeOrigin: true,
-        secure: false,
-        ws: true,
-      },
-    },
+    allowedHosts: ['app.botify.life']
   },
 })
