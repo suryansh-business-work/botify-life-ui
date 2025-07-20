@@ -7,7 +7,7 @@ import Joi from "joi";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useUserContext } from "../../providers/UserProvider";
-import API_LIST from "../apiList";
+import API_LIST from "../../apiList";
 import { GoogleLogin } from '@react-oauth/google';
 
 // Joi validation schema

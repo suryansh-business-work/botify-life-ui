@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://botify.exyconn.com/v1/api/code-run';
+const API_BASE_URL = 'http://localhost:4001/v1/api/code-run';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

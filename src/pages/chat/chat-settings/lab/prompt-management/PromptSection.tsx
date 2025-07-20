@@ -12,7 +12,7 @@ import Joi from "joi";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState, useMemo } from "react";
-import API_LIST from "../../../../apiList";
+import API_LIST from "../../../../../apiList";
 import { useDynamicSnackbar } from "../../../../../hooks/useDynamicSnackbar";
 import { encode } from "gpt-tokenizer";
 
@@ -246,7 +246,7 @@ const PromptSection = () => {
       const prompt = promptValues?.[testDrawer.idx]?.prompt || "";
       const token = localStorage.getItem("token");
       const resp = await axios.post(
-        "https://botify.exyconn.com/chat-gpt/prompt",
+        "http://localhost:4001/chat-gpt/prompt",
         { userInput: prompt + "\n" + testUserInput },
         {
           headers:

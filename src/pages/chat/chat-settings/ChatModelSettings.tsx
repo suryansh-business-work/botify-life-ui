@@ -7,7 +7,7 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import API_LIST from "../../apiList"; // <-- Add this import at the top (adjust path if needed)
+import API_LIST from "../../../apiList"; // <-- Add this import at the top (adjust path if needed)
 
 const schema = Joi.object({
   model: Joi.string().required(),

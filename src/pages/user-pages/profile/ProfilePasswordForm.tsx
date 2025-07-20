@@ -16,7 +16,7 @@ import Joi from "joi";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useDynamicSnackbar } from "../../../hooks/useDynamicSnackbar";
-import API_LIST from "../../apiList"; // <-- Add this import at the top
+import API_LIST from "../../../apiList"; // <-- Add this import at the top
 
 const passwordSchema = Joi.object({
   currentPassword: Joi.string().min(6).max(128).required().label("Current Password"),

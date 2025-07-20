@@ -22,9 +22,10 @@ import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import axios from "axios";
 import * as monaco from 'monaco-editor';
 import { CHAT_GPT_KEY } from "../../../../../utils/config";
+import API_LIST from '../../../../../apiList';
 
-const API_BASE = "https://botify.exyconn.com/v1/api/mcp-server/tool-code";
-const TOOLS_API_BASE = "https://botify.exyconn.com/v1/api/mcp-server/tool";
+const API_BASE = API_LIST.MCP_SERVER_TOOL_CODE_BASE; // <-- Use API_LIST variable
+const TOOLS_API_BASE = API_LIST.MCP_SERVER_TOOL_BASE; // <-- Use API_LIST variable
 
 // Default code template with placeholder for tool parameters
 // const DEFAULT_CODE_TEMPLATE = `/**

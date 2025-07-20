@@ -18,6 +18,7 @@ import DescriptionWithReadMore from "./DescriptionWithReadMore";
 import CreateOrUpdateBotDialog from "./CreateOrUpdateBotDialog";
 import StorageIcon from '@mui/icons-material/Storage';
 import PsychologyIcon from '@mui/icons-material/Psychology';
+import API_LIST from "../../../apiList";
 
 // Map type value to icon class (Font Awesome 5+ CSS classes)
 const typeIconMap: Record<string, string> = {
@@ -27,7 +28,7 @@ const typeIconMap: Record<string, string> = {
   all: "fas fa-list",
 };
 
-const API_BASE = "https://botify.exyconn.com/bot";
+const API_BASE = API_LIST.BOT_BASE;
 
 const Bots = () => {
   const [bots, setBots] = useState<any[]>([]);

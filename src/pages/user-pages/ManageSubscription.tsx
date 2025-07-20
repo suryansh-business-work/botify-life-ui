@@ -12,6 +12,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Table from "../admin/design-system/components/Table";
 import axios from "axios";
 import { useUserContext } from "../../providers/UserProvider";
+import API_LIST from "../../apiList";
 
 function getFirstDayOfMonth() {
   const d = new Date();
@@ -52,7 +53,7 @@ export default function ManageSubscription() {
       const endDate = getEndOfMonth();
       const botOwnerUserId = user?.userId || "";
 
-      const apiUrl = `https://botify.exyconn.com/v1/api/subscription-usage/user/${botOwnerUserId}/date-range?startDate=${startDate}&endDate=${endDate}`;
+      const apiUrl = API_LIST.GET_SUBSCRIPTION_USAGE(botOwnerUserId, startDate, endDate); // <-- Use API_LIST variable
 
       try {
         const response = await axios.get(apiUrl);

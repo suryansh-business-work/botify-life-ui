@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import API_LIST from "../../../../../apiList";
 
 type ConnState = "idle" | "connecting" | "connected" | "failed";
 
@@ -58,7 +59,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
 
     setIsLoadingServers(true);
     try {
-      const response = await fetch('https://botify.exyconn.com/v1/api/mcp-server/list', {
+      const response = await fetch(API_LIST.MCP_SERVER_LIST, { // <-- Use API_LIST variable
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

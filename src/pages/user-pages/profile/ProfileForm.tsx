@@ -21,7 +21,7 @@ import Joi from "joi";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { useUserContext } from "../../../providers/UserProvider";
 import { useDynamicSnackbar } from "../../../hooks/useDynamicSnackbar";
-import API_LIST from "../../apiList";
+import API_LIST from "../../../apiList";
 import Button from "../../admin/design-system/components/Button";
 
 // Profile schema
@@ -86,7 +86,7 @@ export default function ProfileForm() {
     const formData = new FormData();
     formData.append("files", file);
 
-    const res = await fetch("https://botify.exyconn.com/v1/api/imagekit/upload", {
+    const res = await fetch(API_LIST.IMAGEKIT_UPLOAD, { // <-- Use API_LIST variable
       method: "POST",
       body: formData,
     });
@@ -146,7 +146,7 @@ export default function ProfileForm() {
         return;
       }
       const token = localStorage.getItem("token");
-      const res = await fetch(API_LIST.UPDATE_PROFILE, {
+      const res = await fetch(API_LIST.UPDATE_PROFILE, { // <-- Use API_LIST variable
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +225,7 @@ export default function ProfileForm() {
     setOtpSuccess("");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(API_LIST.SEND_VERIFICATION_OTP, {
+      const res = await fetch(API_LIST.SEND_VERIFICATION_OTP, { // <-- Use API_LIST variable
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -263,7 +263,7 @@ export default function ProfileForm() {
     setOtpSuccess("");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(API_LIST.VERIFY_USER_OTP, {
+      const res = await fetch(API_LIST.VERIFY_USER_OTP, { // <-- Use API_LIST variable
         method: "POST",
         headers: {
           "Content-Type": "application/json",

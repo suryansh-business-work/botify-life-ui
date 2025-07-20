@@ -19,7 +19,7 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import API_LIST from "../../apiList";
+import API_LIST from "../../../apiList";
 
 const schema = Joi.object({
   font: Joi.string().required(),

@@ -49,9 +49,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { createContainer } from "./docker-container/default-config.nodejs";
 import { AdvanceContainerConfig } from "./AdvanceContainerConfig";
-
-const API_BASE = "https://botify.exyconn.com/v1/api/mcp-server";
-const ORGANIZATION_API_BASE = "https://botify.exyconn.com/v1/api/organization";
+import API_LIST from "../../apiList";
 
 // Animated MUI components
 const MotionDialog = motion(Dialog);
@@ -241,7 +239,7 @@ const McpCreateAndUpdateDialog: React.FC<McpCreateAndUpdateDialogProps> = ({
     setOrgLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(`${ORGANIZATION_API_BASE}/list`, {
+      const response = await axios.get(`${API_LIST.ORGANIZATION_BASE}/list`, { // <-- Use API_LIST variable
         headers: { Authorization: `Bearer ${token}` },
       });
       const orgs = response.data.data || [];
@@ -278,7 +276,7 @@ const McpCreateAndUpdateDialog: React.FC<McpCreateAndUpdateDialogProps> = ({
     try {
       if (editServer) {
         await axios.patch(
-          `${API_BASE}/update/${editServer.mcpServerId}`,
+          API_LIST.MCP_SERVER_UPDATE(editServer.mcpServerId), // <-- Use API_LIST variable
           { mcpServerName: data.serverName },
           { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );
@@ -286,7 +284,7 @@ const McpCreateAndUpdateDialog: React.FC<McpCreateAndUpdateDialogProps> = ({
       } else {
         await createContainer(data.serverName).then(async () => {
           await axios.post(
-            `${API_BASE}/create`,
+            `${API_LIST.MCP_SERVER_LIST.replace("/list", "/create")}`, // <-- Use API_LIST variable for create endpoint
             {
               userId: user.userId,
               mcpServerCreatorId: user.userId,

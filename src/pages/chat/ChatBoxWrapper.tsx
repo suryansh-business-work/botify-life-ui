@@ -3,7 +3,7 @@ import BotGeneral from "./chat-message-blocks/BotGeneral";
 import LoaderGeneral from "./chat-message-blocks/LoaderGeneral";
 import UserGeneral from "./chat-message-blocks/UserGeneral";
 import axios from "axios";
-import API_LIST from "../apiList";
+import API_LIST from "../../apiList";
 import { useParams } from "react-router-dom";
 import { Alert, Snackbar, Skeleton, Avatar, Backdrop, CircularProgress } from "@mui/material";
 import { useUserContext } from "../../providers/UserProvider";

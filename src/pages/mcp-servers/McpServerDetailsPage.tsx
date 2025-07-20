@@ -29,6 +29,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import API_LIST from "../../apiList";
 
 // Simple dummy images for the slider
 const dummyImages = [
@@ -94,7 +95,7 @@ const McpServerDetailsPage = () => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/get/${mcpServerId}`, {
+      const res = await fetch(API_LIST.MCP_SERVER_GET(mcpServerId), { // <-- Use API_LIST variable
         method: "GET",
         headers: {
           "Content-Type": "application/json",

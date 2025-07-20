@@ -19,6 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from 'axios';
+import API_LIST from '../../../../../apiList';
 
 interface Parameter {
   name: string;
@@ -29,7 +30,7 @@ interface Parameter {
 
 const ToolSettingsSection: React.FC = () => {
   const { mcpServerId, toolId } = useParams<{ mcpServerId: string; toolId: string }>();
-  
+
   // Local state management
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -48,23 +49,23 @@ const ToolSettingsSection: React.FC = () => {
   useEffect(() => {
     const fetchToolData = async () => {
       if (!toolId) return;
-      
+
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Authentication required");
-        
+
         const headers = { Authorization: `Bearer ${token}` };
-        
+
         const response = await axios.get(
-          `https://botify.exyconn.com/v1/api/mcp-server/tool/get/${toolId}`,
+          API_LIST.MCP_SERVER_TOOL_GET(toolId), // <-- Use API_LIST variable
           { headers }
         );
-        
+
         const data = response.data?.data;
         if (data) {
           setToolName(data.toolName || "");
           setToolDescription(data.toolDescription || "");
-          
+
           // Map API parameter structure to our component structure
           if (Array.isArray(data.toolParams)) {
             const mappedParams = data.toolParams.map((param: any) => ({
@@ -82,28 +83,28 @@ const ToolSettingsSection: React.FC = () => {
         setLoading(false);
       }
     };
-    
+
     fetchToolData();
   }, [toolId]);
 
   // Handle save
   const handleSave = async () => {
     if (!toolId || !mcpServerId) return;
-    
+
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication required");
-      
+
       // Map our parameters back to API format
       const apiParams = parameters.map(param => ({
         paramName: param.name,
         paramType: param.type
       }));
-      
+
       // Update tool data
       await axios.patch(
-        `https://botify.exyconn.com/v1/api/mcp-server/tool/update/${toolId}`,
+        API_LIST.MCP_SERVER_TOOL_UPDATE(toolId), // <-- Use API_LIST variable
         {
           toolName,
           toolDescription,
@@ -113,7 +114,7 @@ const ToolSettingsSection: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      
+
       setIsDirty(false);
       setSnackbar({
         open: true,
@@ -184,7 +185,7 @@ const ToolSettingsSection: React.FC = () => {
           startIcon={<SaveIcon />}
           onClick={handleSave}
           disabled={saving || !isDirty}
-          sx={{ 
+          sx={{
             borderRadius: 2,
             bgcolor: isDirty ? "primary.main" : "grey.400",
             boxShadow: isDirty ? "0 4px 10px rgba(25,118,210,0.15)" : "none"
@@ -193,11 +194,11 @@ const ToolSettingsSection: React.FC = () => {
           {saving ? "Saving..." : "Save Changes"}
         </Button>
       </Box>
-      
+
       <Typography variant="h6" fontWeight={600} mb={3}>
         Basic Information
       </Typography>
-      
+
       <div className="row g-3">
         <div className="col-12 col-md-6">
           <TextField
@@ -235,7 +236,7 @@ const ToolSettingsSection: React.FC = () => {
         <Typography variant="h6" fontWeight={600}>
           Parameters
         </Typography>
-        <Button 
+        <Button
           startIcon={<AddIcon />}
           onClick={handleAddParameter}
           variant="outlined"
@@ -244,11 +245,11 @@ const ToolSettingsSection: React.FC = () => {
           Add Parameter
         </Button>
       </Box>
-      
+
       {/* Parameters list */}
       {parameters.length === 0 ? (
-        <Box sx={{ 
-          p: 3, 
+        <Box sx={{
+          p: 3,
           textAlign: 'center',
           border: '1px dashed #ccc',
           borderRadius: 2,
@@ -274,15 +275,15 @@ const ToolSettingsSection: React.FC = () => {
               <Typography variant="subtitle2" fontWeight={600}>
                 Parameter {index + 1}
               </Typography>
-              <IconButton 
-                color="error" 
+              <IconButton
+                color="error"
                 onClick={() => handleRemoveParameter(index)}
                 size="small"
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </Box>
-            
+
             <Box mt={1}>
               <div className="row g-2">
                 <div className="col-12 col-md-6">
@@ -315,7 +316,7 @@ const ToolSettingsSection: React.FC = () => {
           </Paper>
         ))
       )}
-      
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

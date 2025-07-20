@@ -14,6 +14,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
+import API_LIST from "../../../apiList";
 
 const schema = Joi.object({
   name: Joi.string().min(2).max(50).required().label("Bot Name"),
@@ -105,11 +106,11 @@ export default function ChildBotDialog({
       let payload: any = { ...data, type };
 
       if (mode === "create") {
-        url = "https://botify.exyconn.com/bot/create/child-bot";
+        url = API_LIST.BOT_CREATE_CHILD;
         method = "POST";
       } else {
         const botId = bot.botId || bot.id;
-        url = `https://botify.exyconn.com/bot/update/child-bot/${botId}`;
+        url = API_LIST.BOT_UPDATE_CHILD(botId); // <-- Use API_LIST variable
         method = "PATCH";
       }
 

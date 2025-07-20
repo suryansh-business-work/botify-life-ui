@@ -3,6 +3,7 @@ import { Box, Typography, Paper, Select, MenuItem, FormControl, InputLabel, Butt
 import { Terminal as TerminalIcon } from '@mui/icons-material';
 import { ReactTerminal } from 'react-terminal';
 import axios from 'axios';
+import API_LIST from '../../apiList';
 
 interface ContainerInfo {
   Id: string;
@@ -35,7 +36,7 @@ const DockerTerminal: React.FC = () => {
   const fetchContainers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://botify.exyconn.com/v1/api/code-run/docker/containers');
+      const response = await axios.get(API_LIST.DOCKER_CONTAINERS);
       
       let containerList: ContainerInfo[] = [];
       if (Array.isArray(response.data)) {
@@ -63,37 +64,34 @@ const DockerTerminal: React.FC = () => {
   
   const connectToTerminal = async () => {
     if (!selectedContainer) return;
-    
-    // Disconnect any existing connection
+
     disconnectTerminal();
-    
+
     try {
       setLoading(true);
       setError(null);
-      
-      // Clear terminal output
+
       setTerminalOutput(['Connecting to container...']);
-      
-      // Find selected container name for terminal prompt
+
       const container = containers.find(c => c.Id === selectedContainer);
       const containerName = container ? container.Names[0].replace('/', '') : 'container';
-      
+
       // Request a terminal session from your backend
-      const response = await axios.post(`https://botify.exyconn.com/v1/api/code-run/docker/container/${selectedContainer}/exec`, {
+      const response = await axios.post(API_LIST.DOCKER_CONTAINER_EXEC(selectedContainer), {
         AttachStdin: true,
         AttachStdout: true,
         AttachStderr: true,
         Tty: true,
         Cmd: ["/bin/sh", "-c", "if [ -f /bin/bash ]; then /bin/bash; elif [ -f /bin/sh ]; then /bin/sh; else exec sh; fi"]
       });
-      
+
       const execId = response.data.Id;
-      
+
       // Start the WebSocket connection
       const wsUrl = `ws://localhost:3000/v1/api/code-run/docker/exec/${execId}/ws`;
       const socket = new WebSocket(wsUrl);
       socketRef.current = socket;
-      
+
       socket.onopen = () => {
         setConnected(true);
         setLoading(false);

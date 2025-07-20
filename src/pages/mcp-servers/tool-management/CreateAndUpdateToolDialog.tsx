@@ -23,6 +23,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
+import API_LIST from "../../../apiList";
 
 interface ToolParam {
   paramName: string;
@@ -159,9 +160,9 @@ const CreateAndUpdateToolDialog = ({
     
     try {
       const token = localStorage.getItem("token");
-      const url = isEditMode 
-        ? `https://botify.exyconn.com/v1/api/mcp-server/tool/update/${tool.toolId}`
-        : `https://botify.exyconn.com/v1/api/mcp-server/tool/create`;
+      const url = isEditMode
+        ? API_LIST.MCP_SERVER_TOOL_UPDATE(tool.toolId) // <-- Use API_LIST variable
+        : API_LIST.MCP_SERVER_TOOL_CREATE; // <-- Use API_LIST variable
       
       const method = isEditMode ? "PATCH" : "POST";
       

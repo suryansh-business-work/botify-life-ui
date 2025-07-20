@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom"; // Add this import
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -21,31 +21,27 @@ import {
 import BuildIcon from "@mui/icons-material/Build";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import ScienceIcon from "@mui/icons-material/Science"; // Add this for Tool Lab icon
-
-// Import tool management components
+import ScienceIcon from "@mui/icons-material/Science";
 import CreateAndUpdateToolDialog from "./CreateAndUpdateToolDialog";
 import DeleteDialogTool from "./DeleteDialogTool";
+import API_LIST from "../../../apiList";
 
 interface ToolsProps {
   mcpServerId: string;
 }
 
 const Tools: React.FC<ToolsProps> = ({ mcpServerId }) => {
-  const navigate = useNavigate(); // Add navigate hook
-  
-  // State for tools
+  const navigate = useNavigate();
+
   const [tools, setTools] = useState<any[]>([]);
   const [toolsLoading, setToolsLoading] = useState(false);
   const [toolsError, setToolsError] = useState<string | null>(null);
-  
-  // State for tool dialogs
+
   const [toolDialogOpen, setToolDialogOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedToolForDelete, setSelectedToolForDelete] = useState<any>(null);
-  
-  // Add navigation handler for Tool Lab
+
   const handleToolLabClick = (tool: any) => {
     navigate(`/lab/mcp-server/your-server/${mcpServerId}/tool/${tool.toolId}`);
   };
@@ -53,36 +49,36 @@ const Tools: React.FC<ToolsProps> = ({ mcpServerId }) => {
   // Fetch tools for this server
   const getServerTools = useCallback(async () => {
     if (!mcpServerId) return;
-    
+
     setToolsLoading(true);
     setToolsError(null);
-    
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Authentication token not found");
       }
-      
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/tool/list/${mcpServerId}`, {
+
+      const res = await fetch(API_LIST.MCP_SERVER_TOOL_LIST(mcpServerId), { // <-- Use API_LIST variable
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
       });
-      
+
       const result = await res.json();
-      
+
       // Special case for "no-data-found" - don't treat as error
       if (result.status === "no-data-found" || (result.data && result.data.length === 0)) {
         setTools([]);
         return;
       }
-      
+
       if (!res.ok) {
         throw new Error(`Server responded with status: ${res.status}`);
       }
-      
+
       if (result.status === "success") {
         setTools(result.data || []);
       } else {
@@ -97,27 +93,25 @@ const Tools: React.FC<ToolsProps> = ({ mcpServerId }) => {
       setToolsLoading(false);
     }
   }, [mcpServerId]);
-  
-  // Handle tool actions
+
   const handleAddTool = () => {
     setSelectedTool(null);
     setToolDialogOpen(true);
   };
-  
+
   const handleEditTool = (tool: any) => {
     setSelectedTool(tool);
     setToolDialogOpen(true);
   };
-  
+
   const handleToolDialogClose = () => {
     setToolDialogOpen(false);
   };
-  
+
   const handleToolSuccess = () => {
     getServerTools();
   };
-  
-  // Load tools on component mount
+
   useEffect(() => {
     getServerTools();
   }, [getServerTools]);

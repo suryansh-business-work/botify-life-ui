@@ -13,7 +13,7 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
 import DeleteChildBotDialog from "./DeleteChildBotDialog";
-import API_LIST from "../../apiList"; 
+import API_LIST from "../../../apiList"; 
 import Skeleton from "@mui/material/Skeleton";
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
@@ -22,13 +22,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 
-const API_BASE = "https://botify.exyconn.com/bot";
-
 const ChildBots = () => {
   const { childBotType } = useParams<{ childBotType: string }>();
   const navigate = useNavigate();
 
   // Remove: const botPageData = getBotPageByUrl(childBotType || "");
+
+  // Remove hardcoded API_BASE and use API_LIST.BOT_BASE for bot info
 
   // Add state for bot details
   const [botPageData, setBotPageData] = useState<any>(null);
@@ -43,7 +43,7 @@ const ChildBots = () => {
     const fetchBotDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${API_BASE}/bot-info/${childBotType}`, {
+        const res = await fetch(`${API_LIST.BOT_BASE}/bot-info/${childBotType}`, { // <-- Use API_LIST variable
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -83,7 +83,7 @@ const ChildBots = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(API_LIST.GET_CHILD_BOTS, { // <-- Use API_LIST here
+        const res = await fetch(API_LIST.GET_CHILD_BOTS, { // <-- Use API_LIST variable
           method: "POST",
           headers: {
             "Content-Type": "application/json",

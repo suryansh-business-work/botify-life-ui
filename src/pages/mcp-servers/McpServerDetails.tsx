@@ -35,6 +35,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 // Import the delete dialog component
 import McpDeleteDialog from "./McpDeleteDialog";
+import API_LIST from "../../apiList";
 
 const McpServerDetails = () => {
   const { mcpServerId } = useParams<{ mcpServerId: string }>();
@@ -74,7 +75,7 @@ const McpServerDetails = () => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/get/${mcpServerId}`, {
+      const res = await fetch(API_LIST.MCP_SERVER_GET(mcpServerId), { // <-- Use API_LIST variable
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +119,7 @@ const McpServerDetails = () => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/update/${mcpServerId}`, {
+      const res = await fetch(API_LIST.MCP_SERVER_UPDATE(mcpServerId), { // <-- Use API_LIST variable
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -207,7 +208,7 @@ const McpServerDetails = () => {
   
   // Handle copy of server path
   const handleCopyPath = () => {
-    const ssePath = `http://localhost:3001/${mcpServerId}/mcp/sse`;
+    const ssePath = `http://localhost:3001/${mcpServerId}/mcp/sse`; // This is not an API call, just a static SSE endpoint
     navigator.clipboard.writeText(ssePath)
       .then(() => setCopySnackbar(true))
       .catch(err => console.error('Failed to copy path:', err));

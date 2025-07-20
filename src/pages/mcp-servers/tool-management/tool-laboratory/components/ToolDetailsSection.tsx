@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import WarningIcon from '@mui/icons-material/Warning';
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import axios from 'axios';
+import API_LIST from '../../../../../apiList';
 
 interface ToolDetailsSectionProps {
   mcpServerId: string;
@@ -62,13 +63,13 @@ const ToolDetailsSection: React.FC<ToolDetailsSectionProps> = ({ mcpServerId }) 
         const headers = { Authorization: `Bearer ${token}` };
 
         // Fetch server name
-        const serverRes = await axios.get(`https://botify.exyconn.com/v1/api/mcp-server/get/${mcpServerId}`, { headers });
+        const serverRes = await axios.get(API_LIST.MCP_SERVER_GET(mcpServerId), { headers }); // <-- Use API_LIST variable
         if (serverRes.data?.data) {
           setServerName(serverRes.data.data.mcpServerName || "Unknown Server");
         }
 
         // Fetch tool details
-        const toolRes = await axios.get(`https://botify.exyconn.com/v1/api/mcp-server/tool/get/${toolId}`, { headers });
+        const toolRes = await axios.get(API_LIST.MCP_SERVER_TOOL_GET(toolId), { headers }); // <-- Use API_LIST variable
         if (toolRes.data?.data) {
           setToolData(toolRes.data.data);
         }
@@ -111,9 +112,8 @@ const ToolDetailsSection: React.FC<ToolDetailsSectionProps> = ({ mcpServerId }) 
         return;
       }
 
-      // Update the API endpoint to match the curl command
       const headers = { Authorization: `Bearer ${token}` };
-      await axios.delete(`https://botify.exyconn.com/v1/api/mcp-server/tool/delete/${toolId}`, { headers });
+      await axios.delete(API_LIST.MCP_SERVER_TOOL_DELETE(toolId), { headers }); // <-- Use API_LIST variable
 
       // Navigate back with success message
       navigate(`/lab/mcp-server/your-server/${mcpServerId}`, {

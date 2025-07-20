@@ -58,6 +58,7 @@ import axios from 'axios';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import * as Joi from 'joi';
 import { joiResolver } from '@hookform/resolvers/joi';
+import API_LIST from '../../apiList';
 
 // Define interfaces for our data
 interface Container {
@@ -211,7 +212,7 @@ const DockerManagement: React.FC = () => {
   const fetchContainers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://botify.exyconn.com/v1/api/code-run/docker/containers');
+      const response = await axios.get(API_LIST.DOCKER_CONTAINERS);
       
       if (Array.isArray(response.data)) {
         setContainers(response.data);
@@ -243,7 +244,7 @@ const DockerManagement: React.FC = () => {
   const inspectContainer = async (containerId: string) => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://botify.exyconn.com/v1/api/code-run/docker/container/${containerId}`);
+      const response = await axios.get(API_LIST.DOCKER_CONTAINER(containerId));
       setContainerDetails(response.data);
       setInspectDialogOpen(true);
     } catch (error: any) {
@@ -260,7 +261,7 @@ const DockerManagement: React.FC = () => {
   const startContainer = async (containerId: string) => {
     setLoading(true);
     try {
-      await axios.post(`https://botify.exyconn.com/v1/api/code-run/docker/container/${containerId}/start`);
+      await axios.post(API_LIST.DOCKER_CONTAINER_START(containerId));
       setAlert({
         type: 'success',
         message: 'Container started successfully'
@@ -280,7 +281,7 @@ const DockerManagement: React.FC = () => {
   const stopContainer = async (containerId: string) => {
     setLoading(true);
     try {
-      await axios.post(`https://botify.exyconn.com/v1/api/code-run/docker/container/${containerId}/stop`);
+      await axios.post(API_LIST.DOCKER_CONTAINER_STOP(containerId));
       setAlert({
         type: 'success',
         message: 'Container stopped successfully'
@@ -300,7 +301,7 @@ const DockerManagement: React.FC = () => {
   const restartContainer = async (containerId: string) => {
     setLoading(true);
     try {
-      await axios.post(`https://botify.exyconn.com/v1/api/code-run/docker/container/${containerId}/restart`);
+      await axios.post(API_LIST.DOCKER_CONTAINER_RESTART(containerId));
       setAlert({
         type: 'success',
         message: 'Container restarted successfully'
@@ -319,10 +320,9 @@ const DockerManagement: React.FC = () => {
   // Function to delete a container
   const deleteContainer = async () => {
     if (!selectedContainer) return;
-    
     setLoading(true);
     try {
-      await axios.delete(`https://botify.exyconn.com/v1/api/code-run/docker/container/${selectedContainer}`);
+      await axios.delete(API_LIST.DOCKER_CONTAINER_DELETE(selectedContainer));
       setAlert({
         type: 'success',
         message: 'Container deleted successfully'
@@ -342,10 +342,9 @@ const DockerManagement: React.FC = () => {
   // Function to rename a container
   const renameContainer = async () => {
     if (!selectedContainer) return;
-    
     setLoading(true);
     try {
-      await axios.patch(`https://botify.exyconn.com/v1/api/code-run/docker/container/${selectedContainer}/rename`, {
+      await axios.patch(API_LIST.DOCKER_CONTAINER_RENAME(selectedContainer), {
         newName: newContainerName
       });
       setAlert({
@@ -367,13 +366,12 @@ const DockerManagement: React.FC = () => {
   // Function to create new container(s)
   const onCreateSubmit = async (data: ContainerForm) => {
     setLoading(true);
-    
     try {
       // Handle network creation if needed
       let networkId = null;
       if (data.createNetwork && data.networkName) {
         try {
-          const networkResponse = await axios.post('https://botify.exyconn.com/v1/api/code-run/docker/network/create', {
+          const networkResponse = await axios.post(API_LIST.DOCKER_NETWORK_CREATE, {
             Name: data.networkName
           });
           networkId = networkResponse.data.Id;
@@ -433,7 +431,7 @@ const DockerManagement: React.FC = () => {
         }
         
         // Create the container
-        await axios.post('https://botify.exyconn.com/v1/api/code-run/docker/container/create', config);
+        await axios.post(API_LIST.DOCKER_CONTAINER_CREATE, config);
       }
       
       setAlert({
@@ -534,9 +532,7 @@ const DockerManagement: React.FC = () => {
   }, [containers, statusFilter, searchQuery, sortBy]);
 
   function openTerminal(containerId: string): void {
-    // Open a new window/tab to the terminal endpoint for the container
-    // You may need to adjust the URL to match your backend's terminal endpoint
-    const url = `https://botify.exyconn.com/v1/api/code-run/docker/container/${containerId}/terminal`;
+    const url = API_LIST.DOCKER_CONTAINER_TERMINAL(containerId);
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 

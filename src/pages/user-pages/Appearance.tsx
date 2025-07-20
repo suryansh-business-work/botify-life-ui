@@ -6,6 +6,7 @@ import {
   Alert
 } from "@mui/material";
 import axios from "axios";
+import API_LIST from '../../apiList';
 
 // Helper to generate a deterministic pastel color from a string seed
 function getRandomColor(seed: string) {
@@ -19,8 +20,6 @@ function getRandomColor(seed: string) {
   const l = 70 + (Math.abs(hash) % 10); // 70-80%
   return `hsl(${h},${s}%,${l}%)`;
 }
-
-const API_BASE = "https://botify.exyconn.com/design-system";
 
 export default function Appearance() {
   const [themes, setThemes] = useState<{ themeId: string; themeName: string; selected?: boolean }[]>([]);
@@ -38,7 +37,7 @@ export default function Appearance() {
     setThemeLoading(true);
     setThemeError(null);
     try {
-      const res = await axios.get(`${API_BASE}/get`);
+      const res = await axios.get(`${API_LIST.DESIGN_SYSTEM_BASE}/get`);
       if (Array.isArray(res.data.data)) {
         setThemes(res.data.data);
 
@@ -72,7 +71,7 @@ export default function Appearance() {
     setSelectingThemeId(themeId);
     setSelectedThemeId(themeId);
     try {
-      await axios.patch(`${API_BASE}/update/${themeId}`, {
+      await axios.patch(`${API_LIST.DESIGN_SYSTEM_BASE}/update/${themeId}`, {
         selected: true,
       });
       // Do not fetchThemes again, just update local state

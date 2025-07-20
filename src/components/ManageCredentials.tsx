@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import API_LIST from "../apiList";
 import {
   Box,
   Typography,
@@ -25,37 +26,18 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const dummyCredentials = [
-  {
-    id: 1,
-    name: "ChatGPT API Key",
-    value: "sk-********************",
-    type: "OpenAI",
-  },
-  {
-    id: 2,
-    name: "MongoDB Key",
-    value: "mongo-****************",
-    type: "Database",
-  },
-  {
-    id: 3,
-    name: "Gemini Key",
-    value: "gemini-****************",
-    type: "Google AI",
-  },
-  {
-    id: 4,
-    name: "XYZ Key",
-    value: "xyz-****************",
-    type: "Other",
-  },
-];
-
-type Credential = typeof dummyCredentials[0];
+type Credential = {
+  id: number;
+  name: string;
+  value: string;
+  type: string;
+  description?: string;
+};
 
 const ManageCredentials: React.FC = () => {
-  const [credentials, setCredentials] = useState(dummyCredentials);
+  const [credentials, setCredentials] = useState<Credential[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Dialog state
   const [openCreate, setOpenCreate] = useState(false);
@@ -63,48 +45,107 @@ const ManageCredentials: React.FC = () => {
   const [openDelete, setOpenDelete] = useState<Credential | null>(null);
 
   // Form state for create/edit
-  const [form, setForm] = useState({ name: "", value: "", type: "" });
+  const [form, setForm] = useState({ name: "", value: "", type: "", description: "" });
+
+  // Fetch all credentials
+  const fetchCredentials = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(API_LIST.GET_CREDENTIALS);
+      const data = await res.json();
+      if (res.ok) {
+        setCredentials(data.data || []);
+      } else {
+        setError(data.message || "Failed to fetch credentials");
+      }
+    } catch (err) {
+      setError("Network error");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCredentials();
+  }, []);
 
   // Handlers
   const handleOpenCreate = () => {
-    setForm({ name: "", value: "", type: "" });
+    setForm({ name: "", value: "", type: "", description: "" });
     setOpenCreate(true);
   };
 
-  const handleCreate = () => {
-    setCredentials([
-      ...credentials,
-      {
-        id: Date.now(),
-        name: form.name,
-        value: form.value,
-        type: form.type,
-      },
-    ]);
-    setOpenCreate(false);
+  const handleCreate = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(API_LIST.CREATE_CREDENTIAL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        fetchCredentials();
+        setOpenCreate(false);
+      } else {
+        setError(data.message || "Failed to create credential");
+      }
+    } catch (err) {
+      setError("Network error");
+    }
+    setLoading(false);
   };
 
   const handleOpenEdit = (cred: Credential) => {
-    setForm({ name: cred.name, value: cred.value, type: cred.type });
+    setForm({ name: cred.name, value: cred.value, type: cred.type, description: cred.description || "" });
     setOpenEdit(cred);
   };
 
-  const handleEdit = () => {
-    setCredentials((prev) =>
-      prev.map((c) =>
-        c.id === openEdit?.id
-          ? { ...c, name: form.name, value: form.value, type: form.type }
-          : c
-      )
-    );
-    setOpenEdit(null);
+  const handleEdit = async () => {
+    if (!openEdit) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(API_LIST.UPDATE_CREDENTIAL(openEdit.id), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        fetchCredentials();
+        setOpenEdit(null);
+      } else {
+        setError(data.message || "Failed to update credential");
+      }
+    } catch (err) {
+      setError("Network error");
+    }
+    setLoading(false);
   };
 
   const handleOpenDelete = (cred: Credential) => setOpenDelete(cred);
 
-  const handleDelete = () => {
-    setCredentials((prev) => prev.filter((c) => c.id !== openDelete?.id));
-    setOpenDelete(null);
+  const handleDelete = async () => {
+    if (!openDelete) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(API_LIST.DELETE_CREDENTIAL(openDelete.id), {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        fetchCredentials();
+        setOpenDelete(null);
+      } else {
+        setError(data.message || "Failed to delete credential");
+      }
+    } catch (err) {
+      setError("Network error");
+    }
+    setLoading(false);
   };
 
   return (
@@ -132,59 +173,72 @@ const ManageCredentials: React.FC = () => {
                 <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>Key</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Description</TableCell>
                 <TableCell sx={{ fontWeight: 700 }} align="right">
                   Actions
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {credentials.map((cred) => (
-                <TableRow key={cred.id}>
-                  <TableCell>{cred.name}</TableCell>
-                  <TableCell>{cred.type}</TableCell>
-                  <TableCell>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <VisibilityOffIcon fontSize="small" color="disabled" />
-                      <Typography variant="body2" sx={{ letterSpacing: 1 }}>
-                        {cred.value}
-                      </Typography>
-                      <Tooltip title="Copy Key">
-                        <IconButton size="small">
-                          <ContentCopyIcon fontSize="small" />
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <Typography color="text.secondary">Loading...</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : error ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <Typography color="error">{error}</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : credentials.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center">
+                    <Typography color="text.secondary">No credentials found.</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                credentials.map((cred) => (
+                  <TableRow key={cred.id}>
+                    <TableCell>{cred.name}</TableCell>
+                    <TableCell>{cred.type}</TableCell>
+                    <TableCell>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <VisibilityOffIcon fontSize="small" color="disabled" />
+                        <Typography variant="body2" sx={{ letterSpacing: 1 }}>
+                          {cred.value}
+                        </Typography>
+                        <Tooltip title="Copy Key">
+                          <IconButton size="small" onClick={() => navigator.clipboard.writeText(cred.value)}>
+                            <ContentCopyIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{cred.description || "-"}</TableCell>
+                    <TableCell align="right">
+                      <Tooltip title="Edit">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleOpenEdit(cred)}
+                        >
+                          <EditIcon />
                         </IconButton>
                       </Tooltip>
-                    </Stack>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Tooltip title="Edit">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleOpenEdit(cred)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDelete(cred)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {credentials.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    <Typography color="text.secondary">
-                      No credentials found.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+                      <Tooltip title="Delete">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleOpenDelete(cred)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
               )}
             </TableBody>
           </Table>
@@ -205,27 +259,28 @@ const ManageCredentials: React.FC = () => {
             label="Name"
             fullWidth
             value={form.name}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, name: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
           />
           <TextField
             margin="normal"
             label="Type"
             fullWidth
             value={form.type}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, type: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
           />
           <TextField
             margin="normal"
             label="Key"
             fullWidth
             value={form.value}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, value: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
+          />
+          <TextField
+            margin="normal"
+            label="Description"
+            fullWidth
+            value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
           />
         </DialogContent>
         <DialogActions>
@@ -254,27 +309,28 @@ const ManageCredentials: React.FC = () => {
             label="Name"
             fullWidth
             value={form.name}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, name: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
           />
           <TextField
             margin="normal"
             label="Type"
             fullWidth
             value={form.type}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, type: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
           />
           <TextField
             margin="normal"
             label="Key"
             fullWidth
             value={form.value}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, value: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
+          />
+          <TextField
+            margin="normal"
+            label="Description"
+            fullWidth
+            value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
           />
         </DialogContent>
         <DialogActions>

@@ -4,6 +4,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../providers/UserProvider';
 import axios from "axios";
+import API_LIST from "../../apiList";
 
 // Get first day of the current month as a Date object
 function getFirstDayOfMonth() {
@@ -41,8 +42,8 @@ const HeaderUserMenu = () => {
     const endDate = getEndOfMonth();
     const botOwnerUserId = user?.userId || "";
 
-    const apiUrl = `https://botify.exyconn.com/v1/api/subscription-usage/user/${botOwnerUserId}/date-range?startDate=${startDate}&endDate=${endDate}`;
-
+    const apiUrl = API_LIST.GET_SUBSCRIPTION_USAGE(botOwnerUserId, startDate, endDate);
+    
     try {
       const response = await axios.get(apiUrl);
       const { totalPromptTokenSize, userCurrentTokenCount } = response.data;

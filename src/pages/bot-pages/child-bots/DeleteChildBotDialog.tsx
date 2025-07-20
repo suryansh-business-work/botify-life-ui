@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import API_LIST from '../../../apiList';
 
 interface DeleteChildBotDialogProps {
   open: boolean;
@@ -31,7 +32,7 @@ export default function DeleteChildBotDialog({
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `https://botify.exyconn.com/bot/delete/child-bot/${botId}`,
+        API_LIST.BOT_DELETE_CHILD(botId), // <-- Use API_LIST variable
         {
           method: "DELETE",
           headers: {

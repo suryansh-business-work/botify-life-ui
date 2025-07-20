@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
+import API_LIST from '../../../apiList';
 
 interface DeleteToolProps {
   open: boolean;
@@ -24,26 +25,26 @@ const DeleteDialogTool = ({ open, onClose, tool, onSuccess }: DeleteToolProps) =
   // API call to delete the tool
   const handleDeleteTool = async () => {
     if (!tool?.toolId) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/tool/delete/${tool.toolId}`, {
+      const res = await fetch(API_LIST.MCP_SERVER_TOOL_DELETE(tool.toolId), { // <-- Use API_LIST variable
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
       });
-      
+
       if (!res.ok) {
         throw new Error(`Server responded with status: ${res.status}`);
       }
-      
+
       const result = await res.json();
-      
+
       if (result.status === "success") {
         onClose();
         if (onSuccess) onSuccess();
@@ -75,14 +76,14 @@ const DeleteDialogTool = ({ open, onClose, tool, onSuccess }: DeleteToolProps) =
             {error}
           </Alert>
         )}
-        
+
         <Typography variant="body1" color="text.secondary">
           Are you sure you want to delete the tool <strong>"{tool?.toolName}"</strong>? This action cannot be undone.
         </Typography>
       </DialogContent>
       <DialogActions sx={{ p: 2, pt: 1 }}>
-        <Button 
-          onClick={onClose} 
+        <Button
+          onClick={onClose}
           color="inherit"
           variant="outlined"
           disabled={loading}

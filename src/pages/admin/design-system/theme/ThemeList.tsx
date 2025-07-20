@@ -17,7 +17,8 @@ import AddIcon from "@mui/icons-material/Add";
 import Table from "../components/Table";
 import Button from "../components/Button";
 
-const API_BASE = "https://botify.exyconn.com/design-system";
+import API_LIST from "../../../../apiList";
+const API_BASE = API_LIST.DESIGN_SYSTEM_BASE;
 
 export default function ThemeList({
   selectedThemeId,

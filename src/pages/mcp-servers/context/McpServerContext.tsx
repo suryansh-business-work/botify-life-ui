@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import API_LIST from '../../../apiList';
 
 interface McpServerContextType {
   servers: any[];
@@ -18,7 +19,7 @@ export const McpServerProvider: React.FC<{children: React.ReactNode}> = ({ child
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/list`, {
+      const res = await fetch(API_LIST.MCP_SERVER_LIST, { // <-- Use API_LIST variable
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),

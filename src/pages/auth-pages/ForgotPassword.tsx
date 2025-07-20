@@ -19,7 +19,7 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import API_LIST from "../apiList";
+import API_LIST from "../../apiList";
 
 // Step 1: Email schema
 const emailSchema = Joi.object({

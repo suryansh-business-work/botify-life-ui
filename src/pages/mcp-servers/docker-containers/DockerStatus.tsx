@@ -15,8 +15,7 @@ import {
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
-
-const DOCKER_INFO_API = "https://botify.exyconn.com/v1/api/code-run/docker-info";
+import API_LIST from "../../../apiList";
 
 const DockerStatus: React.FC = () => {
   const [dockerInfo, setDockerInfo] = useState<any>(null);
@@ -26,7 +25,7 @@ const DockerStatus: React.FC = () => {
   // Fetch Docker info
   const fetchDockerInfo = () => {
     setLoading(true);
-    fetch(DOCKER_INFO_API)
+    fetch(API_LIST.DOCKER_INFO) // <-- Use API_LIST variable
       .then((res) => res.json())
       .then((data) => {
         setDockerInfo(data);

@@ -27,6 +27,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { motion, AnimatePresence } from 'framer-motion';
+import API_LIST from '../../apiList';
 
 const CATEGORY_OPTIONS = [
   { id: 1, name: 'Technology' },
@@ -88,8 +89,6 @@ interface CreateAndUpdateOrganizationProps {
   organization?: OrganizationFormData | null;
 }
 
-const API_BASE = 'https://botify.exyconn.com/v1/api/organization';
-
 const validationSchema = Yup.object({
   organizationName: Yup.string().required('Organization Name is required'),
   organizationEmail: Yup.string()
@@ -150,8 +149,8 @@ const CreateAndUpdateOrganization: React.FC<CreateAndUpdateOrganizationProps> = 
     try {
       const token = localStorage.getItem('token');
       const url = values.organizationId
-        ? `${API_BASE}/update/${values.organizationId}`
-        : `${API_BASE}/create`;
+        ? `${API_LIST.ORGANIZATION_BASE}/update/${values.organizationId}` // <-- Use API_LIST variable
+        : `${API_LIST.ORGANIZATION_BASE}/create`; // <-- Use API_LIST variable
 
       const payload = {
         ...values,

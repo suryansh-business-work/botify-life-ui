@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useDynamicSnackbar } from "../../hooks/useDynamicSnackbar";
+import API_LIST from "../../apiList";
 
 interface McpDeleteDialogProps {
   open: boolean;
@@ -34,26 +35,26 @@ const McpDeleteDialog: React.FC<McpDeleteDialogProps> = ({
 
   const handleDelete = async () => {
     if (!mcpServerId) return;
-    
+
     setIsDeleting(true);
     setError(null);
-    
+
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://botify.exyconn.com/v1/api/mcp-server/delete/${mcpServerId}`, {
+      const res = await fetch(API_LIST.MCP_SERVER_DELETE(mcpServerId), { // <-- Use API_LIST variable
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (!res.ok) {
         throw new Error(`Server responded with status: ${res.status}`);
       }
-      
+
       const result = await res.json();
-      
+
       if (result.status === "success") {
         showSnackbar("MCP Server deleted successfully!", "success");
         onClose();
@@ -87,23 +88,23 @@ const McpDeleteDialog: React.FC<McpDeleteDialogProps> = ({
           Delete MCP Server
         </Typography>
       </DialogTitle>
-      
+
       <DialogContent>
         {error && (
           <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
             {error}
           </Alert>
         )}
-        
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
+
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           py: 2
         }}>
-          <Box 
-            sx={{ 
-              width: 64, 
+          <Box
+            sx={{
+              width: 64,
               height: 64,
               borderRadius: '50%',
               bgcolor: 'error.light',
@@ -115,23 +116,23 @@ const McpDeleteDialog: React.FC<McpDeleteDialogProps> = ({
           >
             <DeleteOutlineIcon sx={{ fontSize: 32, color: 'error.main' }} />
           </Box>
-          
+
           <Typography variant="h6" align="center" sx={{ mb: 1 }}>
             Are you sure you want to delete this server?
           </Typography>
-          
+
           <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 2 }}>
             You are about to delete "<strong>{serverName}</strong>". This action cannot be undone, and all associated tools and data will be permanently removed.
           </Typography>
         </Box>
       </DialogContent>
-      
+
       <DialogActions sx={{ px: 3, py: 2, justifyContent: 'center' }}>
         <Button
           variant="outlined"
           onClick={onClose}
           disabled={isDeleting}
-          sx={{ 
+          sx={{
             borderRadius: 2,
             px: 3,
             mr: 1,
@@ -139,14 +140,14 @@ const McpDeleteDialog: React.FC<McpDeleteDialogProps> = ({
         >
           Cancel
         </Button>
-        
+
         <Button
           variant="contained"
           color="error"
           onClick={handleDelete}
           disabled={isDeleting}
           startIcon={isDeleting ? <CircularProgress size={20} color="inherit" /> : <DeleteOutlineIcon />}
-          sx={{ 
+          sx={{
             borderRadius: 2,
             px: 3,
             boxShadow: '0 4px 12px rgba(211,47,47,0.2)'
