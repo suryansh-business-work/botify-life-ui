@@ -1,4 +1,4 @@
-name: Botify Life UI Deployment
+name: Botify Life UI Deployment Vite React
 description: Deploy Botify Life UI using Docker and GitHub Actions
 
 on:
