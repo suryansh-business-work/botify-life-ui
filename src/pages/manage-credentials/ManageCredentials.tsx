@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_LIST from "../apiList";
+import API_LIST from "../../apiList";
 import {
   Box,
   Typography,
@@ -25,6 +25,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmationDialog from "../../components/dialogs/ConfirmationDialog"; // <-- Import ConfirmationDialog
 
 type Credential = {
   id: number;
@@ -125,27 +126,15 @@ const ManageCredentials: React.FC = () => {
     setLoading(false);
   };
 
-  const handleOpenDelete = (cred: Credential) => setOpenDelete(cred);
+  const handleOpenDelete = (cred: Credential) => {
+    console.log("Opening delete dialog for:", cred);
+    setOpenDelete(cred)
+  };
 
-  const handleDelete = async () => {
-    if (!openDelete) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(API_LIST.DELETE_CREDENTIAL(openDelete.id), {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (res.ok) {
-        fetchCredentials();
-        setOpenDelete(null);
-      } else {
-        setError(data.message || "Failed to delete credential");
-      }
-    } catch (err) {
-      setError("Network error");
-    }
-    setLoading(false);
+  // Use ConfirmationDialog for delete
+  const handleDeleteSuccess = () => {
+    setOpenDelete(null);
+    fetchCredentials();
   };
 
   return (
@@ -231,7 +220,10 @@ const ManageCredentials: React.FC = () => {
                         <IconButton
                           size="small"
                           color="error"
-                          onClick={() => handleOpenDelete(cred)}
+                          onClick={() => {
+                            console.log("Delete button clicked for:", cred);
+                            handleOpenDelete(cred)
+                          }}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -345,26 +337,23 @@ const ManageCredentials: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Credential Dialog */}
-      <Dialog
+      {/* Delete Credential Dialog using ConfirmationDialog */}
+      <ConfirmationDialog
         open={!!openDelete}
         onClose={() => setOpenDelete(null)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Delete Credential</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete <b>{openDelete?.name}</b>?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDelete(null)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onSuccess={handleDeleteSuccess}
+        apiPath={openDelete ? API_LIST.DELETE_CREDENTIAL(openDelete.id) : ""}
+        title="Delete Credential"
+        description={
+          openDelete
+            ? `Are you sure you want to delete "${openDelete.name}"? This action cannot be undone.`
+            : ""
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        method="DELETE"
+        extensive={true}
+      />
     </Box>
   );
 };

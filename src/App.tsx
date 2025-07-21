@@ -12,7 +12,7 @@ import ToolLaboratory from './pages/mcp-servers/tool-management/tool-laboratory/
 import DockerManagement from './pages/admin/DockerManagement';
 import Organizations from './pages/organization/Organizations';
 import AgenticAi from './pages/agentic-ai/AgenticAi';
-import ManageCredentials from './components/ManageCredentials';
+import ManageCredentials from './pages/manage-credentials/ManageCredentials';
 
 const Chat = lazy(() => import('./pages/chat/Chat'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));

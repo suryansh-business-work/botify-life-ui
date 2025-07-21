@@ -2,6 +2,7 @@ import { AppBar, Toolbar, Box } from '@mui/material';
 import HeaderLogo from './HeaderLogo';
 import HeaderUserMenu from './HeaderUserMenu';
 import HeaderAlert from './HeaderAlert';
+import HeaderOrgSelect from './HeaderOrgSelect';
 // import { useAppTheme } from '../../pages/admin/design-system/ThemeProvider';
 
 const Header = () => {
@@ -14,6 +15,7 @@ const Header = () => {
         <Toolbar>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
             <HeaderLogo />
+            <HeaderOrgSelect />
             <HeaderUserMenu />
           </Box>
         </Toolbar>

@@ -13,6 +13,7 @@ import { GoogleLogin } from '@react-oauth/google';
 const schema = Joi.object({
   firstName: Joi.string().min(2).max(30).required().label("First Name"),
   lastName: Joi.string().min(2).max(30).required().label("Last Name"),
+  organizationName: Joi.string().min(2).max(100).required().label("Organization Name"), // <-- Add organizationName
   email: Joi.string().email({ tlds: false }).required().label("Email"),
   password: Joi.string().min(6).max(128).required().label("Password"),
   confirmPassword: Joi.any()
@@ -49,7 +50,7 @@ export default function Signup() {
     setErrorMsg("");
     setSuccessMsg("");
     try {
-      const res = await fetch(API_LIST.SIGNUP, { // <-- Use API_LIST here
+      const res = await fetch(API_LIST.SIGNUP, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -70,7 +71,6 @@ export default function Signup() {
   // Handler for Google signup success
   const handleGoogleSignupSuccess = async (credentialResponse: any) => {
     try {
-      // Send credentialResponse.credential to your backend for verification and signup/login
       const res = await fetch(API_LIST.GOOGLE_SIGNUP, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,11 +79,6 @@ export default function Signup() {
       const data = await res.json();
       if (res.ok && data.status === "success") {
         setSuccessMsg("Signup successful! You can now sign in.");
-        // Optionally, auto-login:
-        // localStorage.setItem("token", data.data.token);
-        // localStorage.setItem("user", JSON.stringify(data.data.user));
-        // setUser(data.data.user);
-        // navigate("/bots");
       } else {
         setErrorMsg(data.message || "Google signup failed");
       }
@@ -160,6 +155,17 @@ export default function Signup() {
                   helperText={errors.lastName?.message as string}
                   fullWidth
                   disabled={loading}
+                />
+              </div>
+              <div className="col-12 mb-3">
+                <TextField
+                  label="Organization Name"
+                  {...register("organizationName")}
+                  error={!!errors.organizationName}
+                  helperText={errors.organizationName?.message as string}
+                  fullWidth
+                  disabled={loading}
+                  required
                 />
               </div>
               <div className="col-12 mb-3">
