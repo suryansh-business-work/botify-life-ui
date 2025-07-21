@@ -23,6 +23,8 @@ import {
   Alert,
   Snackbar,
   CircularProgress,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -38,6 +40,7 @@ import {
   Link as LinkIcon,
   Refresh as RefreshIcon
 } from '@mui/icons-material';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Add this for selected icon
 import axios from 'axios';
 import CreateAndUpdateOrganization from './CreateAndUpdateOrganization';
 import API_LIST from '../../apiList';
@@ -59,6 +62,9 @@ const Organizations: React.FC = () => {
     message: '',
     severity: 'success'
   });
+
+  // Add loading state for selection switch
+  const [selectingOrgId, setSelectingOrgId] = useState<string | null>(null);
 
   const fetchOrganizations = async () => {
     // Set loading only on initial load, use refreshing for subsequent updates
@@ -201,6 +207,28 @@ const Organizations: React.FC = () => {
     }
   };
 
+  // Switch organization selection
+  const handleSelectOrganization = async (orgId: string) => {
+    setSelectingOrgId(orgId);
+    try {
+      const token = localStorage.getItem('token');
+      await axios.patch(`${API_LIST.ORGANIZATION_BASE}/update-selected`, {
+        organizationId: orgId,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Refetch organizations to update selected status
+      await fetchOrganizations();
+    } catch (err: any) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || err.message || 'Failed to update selected organization',
+        severity: 'error'
+      });
+    }
+    setSelectingOrgId(null);
+  };
+
   // Determine if we should show loading state (either initial load or during refresh)
   const isLoading = loading || refreshing;
 
@@ -262,19 +290,62 @@ const Organizations: React.FC = () => {
                     flexDirection: 'column',
                     position: 'relative',
                     transition: 'all 0.2s',
+                    border: org.selected ? `2px solid ${theme.palette.primary.main}` : undefined, // Highlight selected
                     '&:hover': {
                       boxShadow: theme.shadows[3],
                       transform: 'translateY(-2px)'
                     }
                   }}
                 >
+                  {/* Selected badge */}
+                  {org.selected && (
+                    <Tooltip title="Selected Organization">
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 10,
+                          left: 10,
+                          backgroundColor: 'primary.main',
+                          color: 'white',
+                          width: 28,
+                          height: 28,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 2,
+                        }}
+                      >
+                        <CheckCircleIcon sx={{ fontSize: 22 }} />
+                      </Box>
+                    </Tooltip>
+                  )}
+
+                  {/* Selection Switch */}
+                  <Box sx={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={!!org.selected}
+                          color="primary"
+                          disabled={!!selectingOrgId || org.selected}
+                          onChange={() => handleSelectOrganization(org.organizationId)}
+                        />
+                      }
+                      label={org.selected ? "Selected" : "Select"}
+                    />
+                    {selectingOrgId === org.organizationId && (
+                      <CircularProgress size={18} sx={{ ml: 1 }} />
+                    )}
+                  </Box>
+
                   {org.isOrganizationVerified && (
                     <Tooltip title="Verified Organization">
                       <Box
                         sx={{
                           position: 'absolute',
                           top: 10,
-                          right: 10,
+                          right: 60,
                           backgroundColor: 'success.main',
                           color: 'white',
                           width: 20,

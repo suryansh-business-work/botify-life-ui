@@ -131,7 +131,6 @@ const CreateAndUpdateOrganization: React.FC<CreateAndUpdateOrganizationProps> = 
       country: '',
       zip: '',
     },
-    organizationApiKey: organization?.organizationApiKey || '',
     isOrganizationPublic: organization?.isOrganizationPublic || false,
     organizationWebsite: organization?.organizationWebsite || '',
     isOrganizationDisabled: organization?.isOrganizationDisabled || false,

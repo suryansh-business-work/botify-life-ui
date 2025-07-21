@@ -25,7 +25,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ConfirmationDialog from "../../components/dialogs/ConfirmationDialog"; // <-- Import ConfirmationDialog
+import ConfirmationDialog from "../../components/dialogs/ConfirmationDialog";
 
 type Credential = {
   id: number;
@@ -34,6 +34,8 @@ type Credential = {
   type: string;
   description?: string;
 };
+
+const LOCAL_STORAGE_KEY = "selectedOrganizationId";
 
 const ManageCredentials: React.FC = () => {
   const [credentials, setCredentials] = useState<Credential[]>([]);
@@ -80,10 +82,11 @@ const ManageCredentials: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
       const res = await fetch(API_LIST.CREATE_CREDENTIAL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, organizationId: selectedOrganizationId }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -108,10 +111,11 @@ const ManageCredentials: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
       const res = await fetch(API_LIST.UPDATE_CREDENTIAL(openEdit.id), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, organizationId: selectedOrganizationId }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -127,14 +131,19 @@ const ManageCredentials: React.FC = () => {
   };
 
   const handleOpenDelete = (cred: Credential) => {
-    console.log("Opening delete dialog for:", cred);
-    setOpenDelete(cred)
+    setOpenDelete(cred);
   };
 
   // Use ConfirmationDialog for delete
   const handleDeleteSuccess = () => {
     setOpenDelete(null);
     fetchCredentials();
+  };
+
+  // Pass organizationId in body for delete
+  const getDeleteBody = () => {
+    const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return JSON.stringify({ organizationId: selectedOrganizationId });
   };
 
   return (
@@ -220,10 +229,7 @@ const ManageCredentials: React.FC = () => {
                         <IconButton
                           size="small"
                           color="error"
-                          onClick={() => {
-                            console.log("Delete button clicked for:", cred);
-                            handleOpenDelete(cred)
-                          }}
+                          onClick={() => handleOpenDelete(cred)}
                         >
                           <DeleteIcon />
                         </IconButton>

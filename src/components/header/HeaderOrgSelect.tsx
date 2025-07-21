@@ -5,6 +5,7 @@ import API_LIST from "../../apiList";
 interface Organization {
   organizationId: string;
   organizationName: string;
+  selected?: boolean;
 }
 
 interface HeaderOrgSelectProps {
@@ -12,14 +13,12 @@ interface HeaderOrgSelectProps {
   onChange?: (orgId: string) => void;
 }
 
-const LOCAL_STORAGE_KEY = "selectedOrganizationId";
-
 const HeaderOrgSelect: React.FC<HeaderOrgSelectProps> = ({ value, onChange }) => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<string>("");
 
-  // Fetch organizations
+  // Fetch organizations and set selected based on API response
   useEffect(() => {
     const fetchOrganizations = async () => {
       setLoading(true);
@@ -32,15 +31,14 @@ const HeaderOrgSelect: React.FC<HeaderOrgSelectProps> = ({ value, onChange }) =>
         if (res.ok && Array.isArray(data.data)) {
           setOrganizations(data.data);
 
-          // If nothing selected, select first org by default
-          let orgId = value || localStorage.getItem(LOCAL_STORAGE_KEY) || "";
-          if (!orgId && data.data.length > 0) {
-            orgId = data.data[0].organizationId;
-            setSelectedOrg(orgId);
-            localStorage.setItem(LOCAL_STORAGE_KEY, orgId);
-            onChange?.(orgId);
-          } else if (orgId) {
-            setSelectedOrg(orgId);
+          // Find selected from API response
+          const selectedFromApi = data.data.find((org: Organization) => org.selected);
+          if (selectedFromApi) {
+            setSelectedOrg(selectedFromApi.organizationId);
+            onChange?.(selectedFromApi.organizationId);
+          } else if (data.data.length > 0) {
+            setSelectedOrg(data.data[0].organizationId);
+            onChange?.(data.data[0].organizationId);
           }
         }
       } catch {
@@ -56,15 +54,38 @@ const HeaderOrgSelect: React.FC<HeaderOrgSelectProps> = ({ value, onChange }) =>
   useEffect(() => {
     if (value) {
       setSelectedOrg(value);
-      localStorage.setItem(LOCAL_STORAGE_KEY, value);
     }
   }, [value]);
 
-  const handleChange = (e: any) => {
+  const handleChange = async (e: any) => {
     const orgId = e.target.value;
     setSelectedOrg(orgId);
-    localStorage.setItem(LOCAL_STORAGE_KEY, orgId);
     onChange?.(orgId);
+
+    // Show loader while changing organization
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${API_LIST.ORGANIZATION_BASE}/update-selected`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ organizationId: orgId }),
+      });
+      // Refetch organizations to update selected status
+      const res = await fetch(`${API_LIST.ORGANIZATION_BASE}/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.data)) {
+        setOrganizations(data.data);
+      }
+    } catch {
+      // Optionally handle error
+    }
+    setLoading(false);
   };
 
   return (
@@ -76,6 +97,17 @@ const HeaderOrgSelect: React.FC<HeaderOrgSelectProps> = ({ value, onChange }) =>
         label="Organization"
         onChange={handleChange}
         disabled={loading}
+        renderValue={selected => {
+          if (loading) {
+            return (
+              <Box display="flex" alignItems="center">
+                <CircularProgress size={18} sx={{ mr: 1 }} /> Loading...
+              </Box>
+            );
+          }
+          const org = organizations.find(o => o.organizationId === selected);
+          return org ? org.organizationName : "Select organization";
+        }}
       >
         <MenuItem value="">
           <em>Select organization</em>
