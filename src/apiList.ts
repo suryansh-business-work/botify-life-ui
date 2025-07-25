@@ -1,4 +1,9 @@
-const API_BASE = "http://localhost:4001";
+import { ENV } from "./utils/config";
+
+const API_BASE =
+  ENV === "production"
+    ? "https://botify.exyconn.com"
+    : "http://localhost:4001";
 
 const API_LIST = {
   // Auth APIs
@@ -84,7 +89,7 @@ const API_LIST = {
   // ChatGPT Prompt APIs
   CHAT_GPT_PROMPT: `${API_BASE}/chat-gpt/prompt`,
 
-  // Add more APIs as you add features...
+  CHAT_GPT_3RD_PARTY_BASE: `https://api.openai.com/v1/chat/completions`,
 };
 
 export default API_LIST;

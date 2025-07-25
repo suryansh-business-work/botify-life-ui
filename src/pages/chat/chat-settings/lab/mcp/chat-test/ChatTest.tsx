@@ -6,9 +6,9 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
-import { CHAT_GPT_KEY } from "../../../../../../utils/config";
+import API_LIST from "../../../../../../apiList";
 
-const OPENAI_API_KEY = `${CHAT_GPT_KEY}`; // Replace with your key
+const OPENAI_API_KEY = ``; // Replace with your key
 
 const LLM_MODELS: Record<string, string[]> = {
   "chatgpt": ["gpt-3.5-turbo", "gpt-4"]
@@ -68,7 +68,7 @@ const ChatTest: React.FC<ChatTestProps> = ({ tools, mcpClient }) => {
       Return only a JSON object with the arguments.`;
 
     const res = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
+      API_LIST.CHAT_GPT_3RD_PARTY_BASE,
       {
         model,
         messages: [
@@ -172,7 +172,7 @@ Reply with only the tool name or "none".
     let selectedToolName = "none";
     try {
       const res = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+        API_LIST.CHAT_GPT_3RD_PARTY_BASE,
         {
           model,
           messages: [
@@ -240,7 +240,7 @@ Reply with only the tool name or "none".
       setThinking(th => [...th, "No relevant tool found. Asking ChatGPT..."]);
       try {
         const res = await axios.post(
-          'https://api.openai.com/v1/chat/completions',
+          API_LIST.CHAT_GPT_3RD_PARTY_BASE,
           {
             model,
             messages: [

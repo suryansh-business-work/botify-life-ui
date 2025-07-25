@@ -6,7 +6,8 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
-import { API_URL, CHAT_GPT_KEY } from "../../../utils/config";
+import API_LIST from "../../../apiList";
+import { OPENAI_API_KEY } from "../../../utils/config";
 
 const categories = [
   { value: "finance", label: "Finance" },
@@ -57,8 +58,7 @@ type CreateOrUpdateBotDialogProps = {
   token: string | null;
 };
 
-const API_BASE = `${API_URL}/bot`;
-const OPENAI_API_KEY = `${CHAT_GPT_KEY}`;
+const API_BASE = API_LIST.BOT_BASE;
 const OPENAI_MODEL = "gpt-3.5-turbo"; // Or any model you want
 
 const CreateOrUpdateBotDialog: React.FC<CreateOrUpdateBotDialogProps> = ({
@@ -166,7 +166,7 @@ category should be the value string from the list above. Example: {"description"
 Bot name: "${botName}"`;
 
       const res = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+        API_LIST.CHAT_GPT_3RD_PARTY_BASE,
         {
           model: OPENAI_MODEL,
           messages: [

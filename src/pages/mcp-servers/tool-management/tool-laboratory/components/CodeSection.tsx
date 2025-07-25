@@ -21,8 +21,8 @@ import KeyboardIcon from '@mui/icons-material/Keyboard';
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import axios from "axios";
 import * as monaco from 'monaco-editor';
-import { CHAT_GPT_KEY } from "../../../../../utils/config";
 import API_LIST from '../../../../../apiList';
+import { OPENAI_API_KEY } from '../../../../../utils/config';
 
 const API_BASE = API_LIST.MCP_SERVER_TOOL_CODE_BASE; // <-- Use API_LIST variable
 const TOOLS_API_BASE = API_LIST.MCP_SERVER_TOOL_BASE; // <-- Use API_LIST variable
@@ -445,7 +445,7 @@ Respond with ONLY a JSON object in this format:
 
       // Make API request to check if prompt requires server-side code
       const res = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+        API_LIST.CHAT_GPT_3RD_PARTY_BASE,
         {
           model: "gpt-3.5-turbo",
           messages: [
@@ -457,7 +457,7 @@ Respond with ONLY a JSON object in this format:
         },
         {
           headers: {
-            'Authorization': `Bearer ${CHAT_GPT_KEY || ""}`,
+            'Authorization': `Bearer ${""}`,
             'Content-Type': 'application/json',
           },
         }
@@ -543,7 +543,7 @@ Based on the user's prompt, create ONLY the JavaScript code without any explanat
 
       // Make AI request
       const res = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
+        API_LIST.CHAT_GPT_3RD_PARTY_BASE,
         {
           model: selectedModel,
           messages: [
@@ -555,7 +555,7 @@ Based on the user's prompt, create ONLY the JavaScript code without any explanat
         },
         {
           headers: {
-            'Authorization': `Bearer ${CHAT_GPT_KEY || ""}`,
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
             'Content-Type': 'application/json',
           },
         }
