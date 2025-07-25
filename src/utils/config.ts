@@ -1,2 +1,2 @@
 export const ENV = import.meta.env.ENV || "development";
-export const OPENAI_API_KEY = import.meta.env.CHAT_GPT_KEY || '';
+export const OPENAI_API_KEY = import.meta.env.CHAT_GPT_KEY || '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';

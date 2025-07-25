@@ -1,9 +1,12 @@
 import { ENV } from "./utils/config";
 
-const API_BASE =
-  ENV === "production"
-    ? "https://botify.exyconn.com"
-    : "http://localhost:4001";
+// Use https if running in production OR if the current page is loaded over https
+const isHttps =
+  ENV === "production" ||
+  (typeof window !== "undefined" && window.location.protocol === "https:");
+const API_BASE = isHttps
+  ? "https://botify.exyconn.com"
+  : "http://localhost:4001";
 
 const API_LIST = {
   // Auth APIs

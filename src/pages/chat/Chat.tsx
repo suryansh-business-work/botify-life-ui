@@ -36,7 +36,8 @@ const Chat = () => {
     let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const connectWebSocket = () => {
-      wsInstance = new WebSocket('ws://localhost:8081');
+      wsInstance = new WebSocket('ws://localhost:4002');
+      // wsInstance = new WebSocket('ws://botify.ws.exyconn.com');
 
       wsInstance.onopen = () => {
         setWsConnected(true);
