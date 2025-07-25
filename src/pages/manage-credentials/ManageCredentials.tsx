@@ -140,11 +140,11 @@ const ManageCredentials: React.FC = () => {
     fetchCredentials();
   };
 
-  // Pass organizationId in body for delete
-  const getDeleteBody = () => {
-    const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return JSON.stringify({ organizationId: selectedOrganizationId });
-  };
+  // // Pass organizationId in body for delete
+  // const getDeleteBody = () => {
+  //   const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
+  //   return JSON.stringify({ organizationId: selectedOrganizationId });
+  // };
 
   return (
     <Box sx={{ py: 4, px: { xs: 1, md: 4 } }}>
