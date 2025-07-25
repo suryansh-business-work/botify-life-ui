@@ -37,7 +37,6 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   description = "This action cannot be undone.",
   confirmText = "Delete",
   cancelText = "Cancel",
-  headers = { "Content-Type": "application/json" },
   extensive = false,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -48,10 +47,14 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     setLoading(true);
     setError(null);
     try {
+      const token = localStorage.getItem("token");
       const res = await axios.request({
         url: apiPath,
         method,
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
       });
       if (res.status >= 200 && res.status < 300) {
         if (onSuccess) onSuccess();

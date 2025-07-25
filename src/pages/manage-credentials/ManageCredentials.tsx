@@ -14,11 +14,6 @@ import {
   IconButton,
   Tooltip,
   Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -26,16 +21,15 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmationDialog from "../../components/dialogs/ConfirmationDialog";
+import CreateAndUpdateManageCredentials from "./CreateAndUpdateManageCredentials";
 
 type Credential = {
-  id: number;
+  credentialId: number;
   name: string;
   value: string;
   type: string;
   description?: string;
 };
-
-const LOCAL_STORAGE_KEY = "selectedOrganizationId";
 
 const ManageCredentials: React.FC = () => {
   const [credentials, setCredentials] = useState<Credential[]>([]);
@@ -47,15 +41,18 @@ const ManageCredentials: React.FC = () => {
   const [openEdit, setOpenEdit] = useState<Credential | null>(null);
   const [openDelete, setOpenDelete] = useState<Credential | null>(null);
 
-  // Form state for create/edit
-  const [form, setForm] = useState({ name: "", value: "", type: "", description: "" });
-
   // Fetch all credentials
   const fetchCredentials = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(API_LIST.GET_CREDENTIALS);
+      const token = localStorage.getItem("token");
+      const res = await fetch(API_LIST.GET_CREDENTIALS, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await res.json();
       if (res.ok) {
         setCredentials(data.data || []);
@@ -74,60 +71,11 @@ const ManageCredentials: React.FC = () => {
 
   // Handlers
   const handleOpenCreate = () => {
-    setForm({ name: "", value: "", type: "", description: "" });
     setOpenCreate(true);
   };
 
-  const handleCreate = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
-      const res = await fetch(API_LIST.CREATE_CREDENTIAL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, organizationId: selectedOrganizationId }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        fetchCredentials();
-        setOpenCreate(false);
-      } else {
-        setError(data.message || "Failed to create credential");
-      }
-    } catch (err) {
-      setError("Network error");
-    }
-    setLoading(false);
-  };
-
   const handleOpenEdit = (cred: Credential) => {
-    setForm({ name: cred.name, value: cred.value, type: cred.type, description: cred.description || "" });
     setOpenEdit(cred);
-  };
-
-  const handleEdit = async () => {
-    if (!openEdit) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
-      const res = await fetch(API_LIST.UPDATE_CREDENTIAL(openEdit.id), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, organizationId: selectedOrganizationId }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        fetchCredentials();
-        setOpenEdit(null);
-      } else {
-        setError(data.message || "Failed to update credential");
-      }
-    } catch (err) {
-      setError("Network error");
-    }
-    setLoading(false);
   };
 
   const handleOpenDelete = (cred: Credential) => {
@@ -139,12 +87,6 @@ const ManageCredentials: React.FC = () => {
     setOpenDelete(null);
     fetchCredentials();
   };
-
-  // // Pass organizationId in body for delete
-  // const getDeleteBody = () => {
-  //   const selectedOrganizationId = localStorage.getItem(LOCAL_STORAGE_KEY);
-  //   return JSON.stringify({ organizationId: selectedOrganizationId });
-  // };
 
   return (
     <Box sx={{ py: 4, px: { xs: 1, md: 4 } }}>
@@ -198,7 +140,7 @@ const ManageCredentials: React.FC = () => {
                 </TableRow>
               ) : (
                 credentials.map((cred) => (
-                  <TableRow key={cred.id}>
+                  <TableRow key={cred.credentialId}>
                     <TableCell>{cred.name}</TableCell>
                     <TableCell>{cred.type}</TableCell>
                     <TableCell>
@@ -229,7 +171,10 @@ const ManageCredentials: React.FC = () => {
                         <IconButton
                           size="small"
                           color="error"
-                          onClick={() => handleOpenDelete(cred)}
+                          onClick={() => {
+                            console.log("Delete clicked", cred);
+                            handleOpenDelete(cred)//
+                          }}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -242,113 +187,23 @@ const ManageCredentials: React.FC = () => {
           </Table>
         </TableContainer>
       </Paper>
-
-      {/* Create Credential Dialog */}
-      <Dialog
-        open={openCreate}
-        onClose={() => setOpenCreate(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Create Credential</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="normal"
-            label="Name"
-            fullWidth
-            value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-          />
-          <TextField
-            margin="normal"
-            label="Type"
-            fullWidth
-            value={form.type}
-            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-          />
-          <TextField
-            margin="normal"
-            label="Key"
-            fullWidth
-            value={form.value}
-            onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-          />
-          <TextField
-            margin="normal"
-            label="Description"
-            fullWidth
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenCreate(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleCreate}
-            disabled={!form.name || !form.type || !form.value}
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Edit Credential Dialog */}
-      <Dialog
-        open={!!openEdit}
-        onClose={() => setOpenEdit(null)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Edit Credential</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="normal"
-            label="Name"
-            fullWidth
-            value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-          />
-          <TextField
-            margin="normal"
-            label="Type"
-            fullWidth
-            value={form.type}
-            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-          />
-          <TextField
-            margin="normal"
-            label="Key"
-            fullWidth
-            value={form.value}
-            onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-          />
-          <TextField
-            margin="normal"
-            label="Description"
-            fullWidth
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenEdit(null)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleEdit}
-            disabled={!form.name || !form.type || !form.value}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      
+      <CreateAndUpdateManageCredentials
+        open={openCreate || !!openEdit}
+        onClose={() => {
+          setOpenCreate(false);
+          setOpenEdit(null);
+        }}
+        onSuccess={fetchCredentials}
+        credential={openEdit}
+      />
 
       {/* Delete Credential Dialog using ConfirmationDialog */}
       <ConfirmationDialog
         open={!!openDelete}
         onClose={() => setOpenDelete(null)}
         onSuccess={handleDeleteSuccess}
-        apiPath={openDelete ? API_LIST.DELETE_CREDENTIAL(openDelete.id) : ""}
+        apiPath={openDelete ? API_LIST.DELETE_CREDENTIAL(openDelete.credentialId) : ""}
         title="Delete Credential"
         description={
           openDelete
