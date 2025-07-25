@@ -148,8 +148,8 @@ const CreateAndUpdateOrganization: React.FC<CreateAndUpdateOrganizationProps> = 
     try {
       const token = localStorage.getItem('token');
       const url = values.organizationId
-        ? `${API_LIST.ORGANIZATION_BASE}/update/${values.organizationId}` // <-- Use API_LIST variable
-        : `${API_LIST.ORGANIZATION_BASE}/create`; // <-- Use API_LIST variable
+        ? `${API_LIST.ORGANIZATION_BASE}/update/${values.organizationId}`
+        : `${API_LIST.ORGANIZATION_BASE}/create`;
 
       const payload = {
         ...values,
@@ -171,6 +171,22 @@ const CreateAndUpdateOrganization: React.FC<CreateAndUpdateOrganizationProps> = 
 
       const data = await response.json();
       if (data?.data) {
+        // Refresh token on org change after create
+        if (!values.organizationId) {
+          const refreshRes = await fetch(API_LIST.REFRESH_TOKEN_ON_ORG_CHANGE, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            }
+          });
+          const refreshData = await refreshRes.json();
+          if (refreshRes.ok && refreshData.data?.token) {
+            localStorage.setItem("token", refreshData.data.token);
+            window.location.reload();
+            return; // Stop further execution as page will reload
+          }
+        }
         onClose(true);
       } else {
         console.error('Error:', data.message);

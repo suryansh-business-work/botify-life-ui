@@ -17,6 +17,7 @@ const API_LIST = {
   VERIFY_USER_OTP: `${API_BASE}/auth/verify-otp`,
   GOOGLE_SIGNIN: `${API_BASE}/auth/signin-google`,
   GOOGLE_SIGNUP: `${API_BASE}/auth/signup-google`,
+  REFRESH_TOKEN_ON_ORG_CHANGE: `${API_BASE}/auth/refresh-token-on-org-change`,
 
   // Bot APIs
   GET_BOTS: `${API_BASE}/bot/bots`,

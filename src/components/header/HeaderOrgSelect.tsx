@@ -62,10 +62,10 @@ const HeaderOrgSelect: React.FC<HeaderOrgSelectProps> = ({ value, onChange }) =>
     setSelectedOrg(orgId);
     onChange?.(orgId);
 
-    // Show loader while changing organization
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      // 1. Update selected organization
       await fetch(`${API_LIST.ORGANIZATION_BASE}/update-selected`, {
         method: "PATCH",
         headers: {
@@ -74,7 +74,21 @@ const HeaderOrgSelect: React.FC<HeaderOrgSelectProps> = ({ value, onChange }) =>
         },
         body: JSON.stringify({ organizationId: orgId }),
       });
-      // Refetch organizations to update selected status
+      // 2. Refresh token on org change (no organizationId in body)
+      const refreshRes = await fetch(API_LIST.REFRESH_TOKEN_ON_ORG_CHANGE, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      const refreshData = await refreshRes.json();
+      if (refreshRes.ok && refreshData.data?.token) {
+        localStorage.setItem("token", refreshData.data.token);
+        window.location.reload();
+        return; // Stop further execution as page will reload
+      }
+      // 3. Refetch organizations to update selected status (not needed if reload)
       const res = await fetch(`${API_LIST.ORGANIZATION_BASE}/list`, {
         headers: { Authorization: `Bearer ${token}` },
       });
