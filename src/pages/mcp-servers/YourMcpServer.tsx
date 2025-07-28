@@ -34,7 +34,6 @@ import { useMcpServers } from "./context/McpServerContext";
 import { useUserContext } from "../../providers/UserProvider";
 import { useNavigate } from "react-router-dom";
 import DockerStatus from "./docker-containers/DockerStatus";
-import { NewMcpCreateAndUpdateDialog } from "./NewMcpCreateAndUpdateDialog/NewMcpCreateAndUpdateDialog";
 import McpCreateAndUpdateDialog from "./McpCreateAndUpdateDialog";
 
 const YourMcpServer = () => {
