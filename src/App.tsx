@@ -13,6 +13,7 @@ import DockerManagement from './pages/admin/DockerManagement';
 import Organizations from './pages/organization/Organizations';
 import AgenticAi from './pages/agentic-ai/AgenticAi';
 import ManageCredentials from './pages/manage-credentials/ManageCredentials';
+import Embedded from './pages/chat/chat-settings/lab/embedded/Embedded';
 
 const Chat = lazy(() => import('./pages/chat/Chat'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -88,6 +89,7 @@ const App = () => {
           <Route path="bot/:childBotType/dashboard/:chatBotId" element={<Dashboard />} />
           <Route path="bot/:childBotType/chat-settings/:chatBotId" element={<ChatSettings />} />
           <Route path="bot/:childBotType/lab/:chatBotId" element={<ChatLab />} />
+          <Route path="bot/:childBotType/embedded/:chatBotId" element={<Embedded />} />
           <Route path="lab/mcp-servers/:servers" element={<McpServers />} />
           <Route path="lab/mcp-server/:mcpServerId" element={<McpServerDetailsPage />} />
           <Route path="lab/mcp-server/your-server/:mcpServerId" element={<YourMcpServerManagement />} />

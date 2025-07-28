@@ -26,6 +26,7 @@ import SuggestionDialog from "./dialogs/SuggestionDialog";
 import InfoDialog from "./dialogs/InfoDialog";
 import HelpDialog from "./dialogs/HelpDialog";
 import API_LIST from "../../apiList";
+import { Code } from "@mui/icons-material";
 
 const API_BASE = API_LIST.BOT_BASE;
 
@@ -74,6 +75,7 @@ const ChatTopPannel = () => {
     { to: `/bot/${childBotType}/chat/${chatBotId}`, label: "Chat", icon: <ChatIcon fontSize="small" /> },
     { to: `/bot/${childBotType}/chat-settings/${chatBotId}`, label: "Settings", icon: <SettingsIcon fontSize="small" /> },
     { to: `/bot/${childBotType}/lab/${chatBotId}`, label: "Lab", icon: <ScienceIcon fontSize="small" /> },
+    { to: `/bot/${childBotType}/embedded/${chatBotId}`, label: "Embedded", icon: <Code fontSize="small" /> },
   ];
 
   // Helper to check if link is active
