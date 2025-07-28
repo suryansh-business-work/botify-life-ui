@@ -25,14 +25,14 @@ const Embedded: React.FC = () => {
   const { chatBotId } = useParams();
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(`<script src="https://botify.exyconn.com/embed/botify-chat.js?chatBotId=${chatBotId}"></script>`);
+      await navigator.clipboard.writeText(`<script src="https://botify.exyconn.com/static/embed/botify-chat.js?chatBotId=${chatBotId}"></script>`);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
       setCopied(false);
     }
   };
-  const EMBED_SCRIPT = `<script src="https://botify.exyconn.com/embed/botify-chat.js?chatBotId=${chatBotId}"></script>`;
+  const EMBED_SCRIPT = `<script src="https://botify.exyconn.com/static/embed/botify-chat.js?chatBotId=${chatBotId}"></script>`;
 
   return (
     <section className="chat-lab">
