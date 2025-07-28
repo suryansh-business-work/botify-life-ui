@@ -23,7 +23,7 @@ interface McpServer {
 }
 
 const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
-  const [eventUrl, setEventUrl] = useState("");
+  const [eventUrl, setEventUrl] = useState("http://localhost:3001/mcp/sse");
   const [logs, setLogs] = useState<string[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [connState, setConnState] = useState<ConnState>("idle");
@@ -40,10 +40,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
   // Update eventUrl when serverType or selectedServerId changes
   useEffect(() => {
     if (serverType === "custom") {
-      // Keep the current URL if it's custom
-      if (!eventUrl) {
-        setEventUrl("http://localhost:3001/your-server-id/mcp/sse");
-      }
+      setEventUrl("http://localhost:3001/mcp/sse");
     } else if (serverType === "mcp" && selectedServerId) {
       setEventUrl(`http://localhost:3001/${selectedServerId}/mcp/sse`);
     }
@@ -73,11 +70,9 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
       const result = await response.json();
       if (result.data && Array.isArray(result.data)) {
         setServerList(result.data);
-        
-        // If we have servers and none selected yet, select the first one
         if (result.data.length > 0 && !selectedServerId) {
           setSelectedServerId(result.data[0].mcpServerId);
-          setServerType("mcp"); // Auto-select MCP option if servers exist
+          setServerType("mcp");
         }
       }
       addLog(`✅ Loaded ${result.data?.length || 0} MCP servers.`);
@@ -104,7 +99,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
   // Handle server type change (MCP vs Custom)
   const handleServerTypeChange = (event: SelectChangeEvent) => {
     setServerType(event.target.value);
-    
+
     // Reset connection if we change server type
     if (connState === "connected") {
       if (eventSourceRef.current) {
@@ -113,13 +108,22 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
       }
       setConnState("idle");
       onConnected([], null);
+      if (serverType === "custom") {
+        setEventUrl("http://localhost:3001/mcp/sse");
+      } else if (serverType === "mcp" && selectedServerId) {
+        setEventUrl(`http://localhost:3001/${selectedServerId}/mcp/sse`);
+      }
     }
+
+    // Reset connection state and clear logs when server type changes
+    setConnState("idle");
+    setLogs([]);
   };
 
   // Handle MCP server selection change
   const handleServerChange = (event: SelectChangeEvent) => {
     setSelectedServerId(event.target.value);
-    
+
     // Reset connection if we change server
     if (connState === "connected") {
       if (eventSourceRef.current) {
@@ -144,15 +148,15 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
       onConnected([], null); // Clear tools on disconnect
       return;
     }
-    
+
     if (connState === "failed") {
       // On retry, clear tools as well
       onConnected([], null);
     }
-    
+
     setConnState("connecting");
     addLog("Start checking EventSource...");
-    
+
     // Get token from localStorage
     const token = getAuthToken();
     if (!token) {
@@ -160,19 +164,19 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
       setConnState("failed");
       return;
     }
-    
+
     addLog("🔑 Authentication token retrieved from localStorage.");
 
     // Create URL with token
     const url = new URL(eventUrl);
     url.searchParams.append('token', token);
-    
+
     setLogs(logs => [...logs, `[${new Date().toLocaleTimeString()}] Connecting to ${url.toString()}...`]);
-    
+
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
     }
-    
+
     const es = new window.EventSource(url.toString());
     eventSourceRef.current = es;
 
@@ -182,13 +186,13 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
       // Fetch tools using MCP SDK
       try {
         const mcpClient = new Client({ name: "ui-client", version: "1.0.0" });
-        
+
         // Create SSEClientTransport with authentication
         const transport = new SSEClientTransport(url);
-        
+
         // Connect to the MCP server
         await mcpClient.connect(transport);
-        
+
         const toolList = (await mcpClient.listTools()).tools;
         addLog(`🛠️ Loaded ${toolList.length} tools.`);
         onConnected(toolList, mcpClient); // Send tools to parent
@@ -197,12 +201,12 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
         onConnected([], null); // Send empty list on error
       }
     };
-    
+
     es.onmessage = (event) => {
       console.log("EventSource message:", event.data);
       addLog(`Event: ${event.data}`);
     };
-    
+
     es.onerror = () => {
       addLog("❌ Error or connection closed.");
       setConnState("failed");
@@ -248,7 +252,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
         <Typography variant="h6" className="mb-3" textTransform={"capitalize"}>
           Event Source (MCP Server)
         </Typography>
-        
+
         {/* Server Type Selection - Using Bootstrap Grid */}
         <div className="row mb-3">
           <div className="col-12 col-md-4 mb-2 mb-md-0 mb-4">
@@ -262,11 +266,11 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
                 disabled={connState === "connected" || connState === "connecting"}
               >
                 <MenuItem value="mcp">Your MCP Servers</MenuItem>
-                <MenuItem value="custom">Custom URL</MenuItem>
+                <MenuItem value="custom">Custom Server</MenuItem>
               </Select>
             </FormControl>
           </div>
-          
+
           {serverType === "mcp" ? (
             <div className="col-11 col-md-7 d-flex align-items-center">
               <FormControl fullWidth size="small" sx={{ flex: 1, minWidth: '100%' }}>
@@ -290,9 +294,9 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
                   )}
                 </Select>
               </FormControl>
-              <IconButton 
-                size="small" 
-                onClick={fetchMcpServers} 
+              <IconButton
+                size="small"
+                onClick={fetchMcpServers}
                 disabled={isLoadingServers}
                 sx={{ ml: 1 }}
                 title="Refresh server list"
@@ -310,12 +314,12 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
                 onChange={e => setEventUrl(e.target.value)}
                 fullWidth
                 disabled={connState === "connected" || connState === "connecting"}
-                placeholder="http://localhost:3001/server-id/mcp/sse"
+                placeholder="http://localhost:3001/mcp/sse"
               />
             </div>
           )}
         </div>
-        
+
         {/* Final URL Display */}
         {serverType === "mcp" && selectedServerId && (
           <Box sx={{ mb: 3, p: 1.5, borderRadius: 1, bgcolor: 'rgba(0,0,0,0.05)' }}>
@@ -324,7 +328,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
             </Typography>
           </Box>
         )}
-        
+
         {/* Connect Button and Logs - Using Bootstrap Grid */}
         <div className="row align-items-center">
           <div className="col-6 col-md-2 mb-2 mb-md-0 d-grid">
@@ -361,7 +365,7 @@ const EventSource: React.FC<EventSourceProps> = ({ onConnected }) => {
           </div>
         </div>
       </Paper>
-      
+
       {/* Drawer remains unchanged */}
       <Drawer
         anchor="right"
