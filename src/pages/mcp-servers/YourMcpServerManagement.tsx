@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-// Import components
 import McpServerDetails from "./McpServerDetails";
 import Tools from "./tool-management/Tools";
 
@@ -17,21 +16,18 @@ const YourMcpServerManagement = () => {
   const { mcpServerId } = useParams<{ mcpServerId: string }>();
   const navigate = useNavigate();
   
-  // State for tabs
   const [activeTab, setActiveTab] = useState(0);
   
-  // Handle tab change
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3 } }}>
-      {/* Header with back button */}
       <Box display="flex" alignItems="center" mb={2}>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/lab/mcp-servers/your-servers')}
           sx={{
             background: "#e3eafc",
             color: "#1976d2",
@@ -52,11 +48,7 @@ const YourMcpServerManagement = () => {
           Server Management
         </Typography>
       </Box>
-      
-      {/* Server details */}
       <McpServerDetails />
-      
-      {/* Tabs for different sections */}
       <Tabs 
         value={activeTab} 
         onChange={handleTabChange}

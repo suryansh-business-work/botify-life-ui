@@ -95,7 +95,7 @@ const HeaderUserMenu = () => {
         {firstName && (
           <div className="d-flex align-items-center ps-2 pe-2">
             <span className="d-none d-md-inline-block me-3">{firstName} {lastName}</span>
-            <Avatar alt={user?.firstName} src={avatarPic} />
+            <Avatar alt={user?.firstName} src={avatarPic} sx={{ objectFit: "contain" }} />
           </div>
         )}
 

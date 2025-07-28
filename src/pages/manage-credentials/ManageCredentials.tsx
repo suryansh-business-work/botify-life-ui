@@ -198,7 +198,6 @@ const ManageCredentials: React.FC = () => {
         credential={openEdit}
       />
 
-      {/* Delete Credential Dialog using ConfirmationDialog */}
       <ConfirmationDialog
         open={!!openDelete}
         onClose={() => setOpenDelete(null)}

@@ -7,8 +7,7 @@ import SendIcon from "@mui/icons-material/Send";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import API_LIST from "../../../../../../apiList";
-
-const OPENAI_API_KEY = ``; // Replace with your key
+import { OPENAI_API_KEY } from "../../../../../../utils/config";
 
 const LLM_MODELS: Record<string, string[]> = {
   "chatgpt": ["gpt-3.5-turbo", "gpt-4"]

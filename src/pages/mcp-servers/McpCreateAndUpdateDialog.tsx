@@ -177,10 +177,9 @@ const McpCreateAndUpdateDialog: React.FC<McpCreateAndUpdateDialogProps> = ({
   editServer,
 }) => {
   const theme = useTheme();
-  const { user } = useUserContext();
   const showSnackbar = useDynamicSnackbar();
   const { invalidateServers } = useMcpServers();
-
+  const { user } = useUserContext();
   const [organizations, setOrganizations] = React.useState<{ organizationId: string; organizationName: string }[]>([]);
   const [orgLoading, setOrgLoading] = React.useState(false);
   const [openCreateOrg, setOpenCreateOrg] = React.useState(false);
@@ -244,7 +243,6 @@ const McpCreateAndUpdateDialog: React.FC<McpCreateAndUpdateDialogProps> = ({
       });
       const orgs = response.data.data || [];
       setOrganizations(orgs);
-
       // Auto-select logic
       if (orgs.length > 0) {
         if (selectOrgId) {
@@ -259,44 +257,31 @@ const McpCreateAndUpdateDialog: React.FC<McpCreateAndUpdateDialogProps> = ({
     setOrgLoading(false);
   };
 
-  // On open or after org creation, fetch orgs and handle auto-select
   React.useEffect(() => {
     fetchOrganizations(newlyCreatedOrgId || undefined);
-    // Reset the flag after using it
     if (newlyCreatedOrgId) setNewlyCreatedOrgId(null);
-    // eslint-disable-next-line
   }, [open, openCreateOrg]);
 
   const onSubmit = async (data: FormValues) => {
     const token = localStorage.getItem("token");
-    if (!user?.userId || !token) {
-      showSnackbar("User not authenticated", "error");
-      return;
-    }
     try {
       if (editServer) {
         await axios.patch(
-          API_LIST.MCP_SERVER_UPDATE(editServer.mcpServerId), // <-- Use API_LIST variable
+          API_LIST.MCP_SERVER_UPDATE(editServer.mcpServerId),
           { mcpServerName: data.serverName },
           { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );
         showSnackbar("MCP Server updated successfully!", "success");
       } else {
-        await createContainer(data.serverName).then(async () => {
-          await axios.post(
+        await axios.post(
             `${API_LIST.MCP_SERVER_LIST.replace("/list", "/create")}`, // <-- Use API_LIST variable for create endpoint
             {
-              userId: user.userId,
               mcpServerCreatorId: user.userId,
               mcpServerName: data.serverName,
             },
             { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
           );
           showSnackbar("MCP Server created successfully!", "success");
-        }).catch((err) => {
-          showSnackbar(`Failed to create Docker container: ${err.message}`, "error");
-        });
-
       }
       invalidateServers();
       onClose();
