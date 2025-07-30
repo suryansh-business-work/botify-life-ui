@@ -12,6 +12,7 @@ interface Message {
   role: 'user' | 'bot' | 'system';
   botResponse: JSX.Element;
   timestamp: string;
+  userContext?: any;
 }
 
 const Alert = MuiAlert as React.FC<{ severity: AlertColor; children: React.ReactNode }>;
@@ -20,104 +21,86 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [wsConnected, setWsConnected] = useState<boolean>(false);
+  const [sseConnected, setSseConnected] = useState<boolean>(false);
   const [toast, setToast] = useState<{ open: boolean; message: string; severity: AlertColor }>({
     open: false,
     message: '',
     severity: 'info',
   });
 
-  const ws = useRef<WebSocket | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
   const { user } = useUserContext();
   const { chatBotId } = useParams<{ childBotType: string; chatBotId: string }>();
 
   useEffect(() => {
-    let wsInstance: WebSocket;
-    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+    if (!chatBotId) return;
 
-    const connectWebSocket = () => {
-      wsInstance = new WebSocket('ws://localhost:4002');
-      // wsInstance = new WebSocket('ws://botify.ws.exyconn.com');
+    const url = `http://localhost:4001/chat-sse/events/${chatBotId}`;
+    const eventSource = new window.EventSource(url);
 
-      wsInstance.onopen = () => {
-        setWsConnected(true);
-        setToast({ open: true, message: 'Chat Connected', severity: 'success' });
-        // Request chat history on connect
-        wsInstance.send(
-          JSON.stringify({
-            firstLoadConnect: true,
-            userContext: user,
-            chatBotId,
-            userInput: null,
-          })
-        );
-      };
-
-      wsInstance.onclose = () => {
-        setWsConnected(false);
-        setToast({ open: true, message: 'Chat Disconnected', severity: 'error' });
-        reconnectTimeout = setTimeout(connectWebSocket, 2000);
-      };
-
-      wsInstance.onerror = () => {
-        setIsLoading(false);
-        setWsConnected(false);
-        setToast({ open: true, message: 'Chat error', severity: 'error' });
-      };
-
-      wsInstance.onmessage = async (event) => {
-        setIsLoading(false);
-        let text = '';
-        if (typeof event.data === 'string') {
-          text = event.data;
-        } else if (event.data instanceof Blob) {
-          text = await event.data.text();
-        }
-        try {
-          const parsed = JSON.parse(text);
-          console.log(parsed)
-          const botMessages = Array.isArray(parsed)
-            ? parsed
-            : Array.isArray(parsed.messages)
-              ? parsed.messages
-              : [parsed];
-
-          setMessages((prev) => [
-            ...prev,
-            ...botMessages.map((data: any) => ({
-              role: data?.role || 'bot',
-              botResponse: <p>{typeof data?.content === 'string' ? data.content : JSON.stringify(data?.content)}</p>,
-              timestamp: formatDateTime(data?.createdAt || new Date().toISOString()),
-              userContext: data?.userContext
-            })),
-          ]);
-        } catch (error) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'bot',
-              botResponse: <p>{text}</p>,
-              timestamp: formatDateTime(new Date().toISOString()),
-              userContext: user
-            },
-          ]);
-        }
-      };
-
-      ws.current = wsInstance;
+    eventSource.onopen = () => {
+      setSseConnected(true);
+      setToast({ open: true, message: 'Chat Connected', severity: 'success' });
     };
 
-    connectWebSocket();
+    eventSource.onerror = () => {
+      setSseConnected(false);
+      setToast({ open: true, message: 'Chat Disconnected', severity: 'error' });
+    };
+
+    eventSource.addEventListener('history', (event: MessageEvent) => {
+      try {
+        const history = JSON.parse(event.data);
+        const botMessages = Array.isArray(history) ? history : [];
+        setMessages(
+          botMessages.map((data: any) => ({
+            role: data?.role || 'bot',
+            botResponse: <p>{typeof data?.content === 'string' ? data.content : JSON.stringify(data?.content)}</p>,
+            timestamp: formatDateTime(data?.createdAt || new Date().toISOString()),
+            userContext: data?.userContext,
+          }))
+        );
+      } catch {
+        // fallback: ignore history if parsing fails
+      }
+    });
+
+    eventSource.onmessage = (event: MessageEvent) => {
+      setIsLoading(false);
+      let text = event.data;
+      try {
+        const parsed = JSON.parse(text);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'bot',
+            botResponse: <p>{parsed?.content}</p>,
+            timestamp: formatDateTime(new Date().toISOString()),
+            userContext: user,
+          }
+        ]);
+      } catch (error) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'bot',
+            botResponse: <p>{text}</p>,
+            timestamp: formatDateTime(new Date().toISOString()),
+            userContext: user,
+          }
+        ]);
+      }
+    };
+
+    eventSourceRef.current = eventSource;
 
     return () => {
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      wsInstance?.close();
+      eventSource.close();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatBotId, user]);
 
-  const handleSendMessage = () => {
-    if (!userInput.trim() || !ws.current || ws.current.readyState !== 1) {
+  const handleSendMessage = async () => {
+    if (!userInput.trim() || !sseConnected) {
       setToast({ open: true, message: 'Connection disconnected. Please wait...', severity: 'warning' });
       return;
     }
@@ -130,17 +113,18 @@ const Chat = () => {
         timestamp,
       },
     ]);
-    ws.current.send(
-      JSON.stringify({
-        firstLoadConnect: false,
-        userContext: user,
+    setIsLoading(true);
+
+    await fetch('http://localhost:4001/chat-sse/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         chatBotId,
         userInput,
-        role: 'user',
-      })
-    );
+        userContext: user,
+      }),
+    });
     setUserInput('');
-    setIsLoading(true);
   };
 
   return (
@@ -155,7 +139,7 @@ const Chat = () => {
                 userInput={userInput}
                 setUserInput={setUserInput}
                 handleSendMessage={handleSendMessage}
-                wsConnected={wsConnected}
+                wsConnected={sseConnected}
               />
             </div>
           </div>
